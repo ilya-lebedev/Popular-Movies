@@ -1,5 +1,25 @@
 apply plugin: 'com.android.application'
 
+def noKeyFound = '"NO_KEY_FOUND"'
+def tmdbApiKey = noKeyFound
+
+def apiKeyFile = file('../api_key.txt')
+def Properties apiKeyData = new Properties()
+
+if (apiKeyFile.canRead()) {
+    apiKeyData.load(new FileInputStream(apiKeyFile))
+
+    if (apiKeyData != null) {
+        if (apiKeyData.containsKey('tmdbApiKey')) {
+            tmdbApiKey = apiKeyData['tmdbApiKey']
+        }
+    }
+}
+
+if (tmdbApiKey == noKeyFound) {
+    tmdbApiKey = '"PAST_YOUR_TMDB_API_KEY_HERE"'
+}
+
 android {
     compileSdkVersion 26
     defaultConfig {
@@ -9,6 +29,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // Add TMDb API key as a constant field
+        buildConfigField "String", "TMDB_API_KEY", tmdbApiKey
     }
     buildTypes {
         release {
