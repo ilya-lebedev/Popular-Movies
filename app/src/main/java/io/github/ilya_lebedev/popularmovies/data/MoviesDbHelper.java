@@ -22,18 +22,18 @@ import android.database.sqlite.SQLiteOpenHelper;
 /**
  * Manages a local database for movies data.
  */
-public class MovieDbHelper extends SQLiteOpenHelper {
+public class MoviesDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "movies.db";
 
     private static final int DATABASE_VERSION = 1;
 
     /**
-     * Creates MovieDbHelper.
+     * Creates MoviesDbHelper.
      *
      * @param context Used for locating paths to the database
      */
-    public MovieDbHelper(Context context) {
+    public MoviesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
