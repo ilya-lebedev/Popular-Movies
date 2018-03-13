@@ -27,7 +27,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 import io.github.ilya_lebedev.popularmovies.BuildConfig;
-import io.github.ilya_lebedev.popularmovies.data.MoviePreferences;
+import io.github.ilya_lebedev.popularmovies.data.MoviesPreferences;
 
 /**
  * These utilities uses to communicate with TMDb server.
@@ -66,13 +66,13 @@ public class NetworkUtils {
      * @return URL to query TMDb service
      */
     public static URL getMoviesListUrl(Context context) {
-        int sortOrder = MoviePreferences.getMoviesSortOrder(context);
+        int sortOrder = MoviesPreferences.getMoviesSortOrder(context);
         String sortOrderPath;
         switch (sortOrder) {
-            case MoviePreferences.SORT_ORDER_MOST_POPULAR:
+            case MoviesPreferences.SORT_ORDER_MOST_POPULAR:
                 sortOrderPath = MOST_POPULAR_PATH;
                 break;
-            case MoviePreferences.SORT_ORDER_TOP_RATED:
+            case MoviesPreferences.SORT_ORDER_TOP_RATED:
                 sortOrderPath = TOP_RATED_PATH;
                 break;
             default:

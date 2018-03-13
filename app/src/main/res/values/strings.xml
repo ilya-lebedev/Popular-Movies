@@ -2,7 +2,7 @@
     <string name="app_name">Popular Movies</string>
 
     <!-- - - - - - - - - - - - - - - -
-      - Used by MoviePreferences  -
+      - Used by MoviesPreferences  -
       - - - - - - - - - - - - - - - -->
 
     <!-- Key name for movies sort order preference in SharedPreferences -->

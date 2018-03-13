@@ -24,14 +24,14 @@ import io.github.ilya_lebedev.popularmovies.R;
 /**
  * Class for manipulating app preferences.
  */
-public class MoviePreferences {
+public class MoviesPreferences {
 
     /* Movies sort order variants */
     public static final int SORT_ORDER_MOST_POPULAR = 1;
     public static final int SORT_ORDER_TOP_RATED = 2;
 
     /* This is utility class and we don't need to instantiate it */
-    private MoviePreferences() {}
+    private MoviesPreferences() {}
 
     /**
      * Return sort order type.
