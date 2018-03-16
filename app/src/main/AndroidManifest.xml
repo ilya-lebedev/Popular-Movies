@@ -26,6 +26,10 @@
             android:name=".data.MoviesProvider"
             android:exported="false" />
 
+        <service
+            android:name=".sync.MovieFetchIntentService"
+            android:exported="false" />
+
     </application>
 
 </manifest>
