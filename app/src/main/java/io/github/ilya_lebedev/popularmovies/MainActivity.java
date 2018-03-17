@@ -17,8 +17,11 @@ package io.github.ilya_lebedev.popularmovies;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import io.github.ilya_lebedev.popularmovies.data.MoviesContract;
+import io.github.ilya_lebedev.popularmovies.data.MoviesPreferences;
 
 /**
  * Main activity of the app.
@@ -53,6 +56,57 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        int sortOrder = MoviesPreferences.getMoviesSortOrder(this);
+        int menuItemId;
+
+        switch (sortOrder) {
+            case MoviesPreferences.SORT_ORDER_TOP_RATED:
+                menuItemId = R.id.action_top_rated;
+                break;
+            case MoviesPreferences.SORT_ORDER_MOST_POPULAR:
+                menuItemId = R.id.action_most_popular;
+                break;
+            default:
+                menuItemId = R.id.action_top_rated;
+        }
+
+        menu.findItem(menuItemId).setChecked(true);
+
+        return true;
+    }
+
+    private void checkUncheckMenuItem(MenuItem item) {
+        if (item.isChecked()) {
+            item.setChecked(false);
+        } else {
+            item.setChecked(true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        switch (itemId) {
+            case R.id.action_top_rated:
+                MoviesPreferences.setMoviesSortOrder(this,
+                        MoviesPreferences.SORT_ORDER_TOP_RATED);
+                checkUncheckMenuItem(item);
+                return true;
+            case R.id.action_most_popular:
+                MoviesPreferences.setMoviesSortOrder(this,
+                        MoviesPreferences.SORT_ORDER_MOST_POPULAR);
+                checkUncheckMenuItem(item);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }
