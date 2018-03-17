@@ -42,4 +42,16 @@
     <!-- Label for top rated option in sort order preference -->
     <string name="pref_sort_order_label_top_rated">Top Rated</string>
 
+    <string name="pref_most_popular_total_pages_key" translatable="false">most_popular_total_pages</string>
+
+    <string name="pref_most_popular_current_page_key" translatable="false">most_popular_current_page</string>
+
+    <string name="pref_most_popular_last_update_time_key">most_popular_update_time</string>
+
+    <string name="pref_top_rated_total_pages_key" translatable="false">top_rated_total_pages</string>
+
+    <string name="pref_top_rated_current_page_key" translatable="false">top_rated_current_page</string>
+
+    <string name="pref_top_rated_last_update_time_key" translatable="false">top_rated_update_time</string>
+
 </resources>

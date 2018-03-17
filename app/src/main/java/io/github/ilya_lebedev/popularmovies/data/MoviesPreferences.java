@@ -39,7 +39,7 @@ public class MoviesPreferences {
      * @param context Used to access SharedPreferences
      * @return sort order type.
      */
-    public static int getMoviesSortOrder(Context context) {
+    public static int getMoviesSortOrder(Context context) { // getMoviesShowMode
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         String keyForSortOrder = context.getString(R.string.pref_sort_order_key);
@@ -82,6 +82,217 @@ public class MoviesPreferences {
         SharedPreferences.Editor editor = sp.edit();
 
         editor.putString(keyForSortOrder, sortOrderValue);
+
+        editor.apply();
+    }
+
+    /**
+     * Return total pages number of most popular movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @return total pages number
+     */
+    public static int getMostPopularTotalPages(Context context) {
+
+        String key = context.getString(R.string.pref_most_popular_total_pages_key);
+        int defaultValue = context.getResources()
+                .getInteger(R.integer.pref_most_popular_total_pages_default);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getInt(key, defaultValue);
+    }
+
+    /**
+     * Save total pages number of most popular movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @param totalPages total pages number
+     */
+    public static void setMostPopularTotalPages(Context context, int totalPages) {
+
+        String key = context.getString(R.string.pref_most_popular_total_pages_key);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putInt(key, totalPages);
+
+        editor.apply();
+    }
+
+    /**
+     * Return current page number of most popular movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @return current page number
+     */
+    public static int getMostPopularCurrentPage(Context context) {
+
+        String key = context.getString(R.string.pref_most_popular_current_page_key);
+        int defaultValue = context.getResources()
+                .getInteger(R.integer.pref_most_popular_current_page_default);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getInt(key, defaultValue);
+    }
+
+    /**
+     * Save current page number of most popular movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @param currentPage current page number
+     */
+    public static void setMostPopularCurrentPage(Context context, int currentPage) {
+
+        String key = context.getString(R.string.pref_most_popular_current_page_key);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putInt(key, currentPage);
+
+        editor.apply();
+    }
+
+    /**
+     * Return last update time of most popular movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @return time in millis
+     */
+    public static long getMostPopularLastUpdateTime(Context context) {
+
+        String key = context.getString(R.string.pref_most_popular_last_update_time_key);
+        int defaultValue = context.getResources()
+                .getInteger(R.integer.pref_most_popular_last_update_time_default);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getLong(key, defaultValue);
+    }
+
+    /**
+     * Save last update time of most popular movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @param lastUpdateTime time in millis
+     */
+    public static void setMostPopularLastUpdateTime(Context context, long lastUpdateTime) {
+
+        String key = context.getString(R.string.pref_most_popular_last_update_time_key);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putLong(key, lastUpdateTime);
+
+        editor.apply();
+    }
+
+    /**
+     * Return total pages number of top rated movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @return total pages number
+     */
+    public static int getTopRatedTotalPages(Context context) {
+
+        String key = context.getString(R.string.pref_top_rated_total_pages_key);
+        int defaultValue = context.getResources()
+                .getInteger(R.integer.pref_top_rated_total_pages_default);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getInt(key, defaultValue);
+    }
+
+    /**
+     * Save total pages number of top rated movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @param totalPages total pages number
+     */
+    public static void setTopRatedTotalPages(Context context, int totalPages) {
+
+        String key = context.getString(R.string.pref_top_rated_total_pages_key);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putInt(key, totalPages);
+
+        editor.apply();
+    }
+
+    /**
+     * Return current page number of top rated movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @return current page number
+     */
+    public static int getTopRatedCurrentPage(Context context) {
+
+        String key = context.getString(R.string.pref_top_rated_current_page_key);
+        int defaultValue = context.getResources()
+                .getInteger(R.integer.pref_top_rated_current_page_default);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getInt(key, defaultValue);
+    }
+
+    /**
+     * Save current page number of top rated movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @param currentPage current page number
+     */
+    public static void setTopRatedCurrentPage(Context context, int currentPage) {
+
+        String key = context.getString(R.string.pref_top_rated_current_page_key);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putInt(key, currentPage);
+
+        editor.apply();
+    }
+
+    /**
+     * Return last update time of top rated movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @return time in millis
+     */
+    public static long getTopRatedLastUpdateTime(Context context) {
+
+        String key = context.getString(R.string.pref_top_rated_last_update_time_key);
+        int defaultValue = context.getResources()
+                .getInteger(R.integer.pref_top_rated_last_update_time_default);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getLong(key, defaultValue);
+    }
+
+
+    /**
+     * Save last update time of top rated movies.
+     *
+     * @param context Used to access SharedPreferences and app resources
+     * @param lastUpdateTime time in millis
+     */
+    public static void setTopRatedLastUpdateTime(Context context, long lastUpdateTime) {
+
+        String key = context.getString(R.string.pref_top_rated_last_update_time_key);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putLong(key, lastUpdateTime);
 
         editor.apply();
     }
