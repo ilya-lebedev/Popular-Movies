@@ -44,7 +44,7 @@ public class MoviesPreferences {
 
         String keyForSortOrder = context.getString(R.string.pref_sort_order_key);
         String mostPopularSortOrder = context.getString(R.string.pref_sort_order_most_popular);
-        String topRatedSortOrder = context.getString(R.string.pref_sort_order_label_top_rated);
+        String topRatedSortOrder = context.getString(R.string.pref_sort_order_top_rated);
 
         String sortOrder = sp.getString(keyForSortOrder, mostPopularSortOrder);
 
