@@ -15,6 +15,7 @@
  */
 package io.github.ilya_lebedev.popularmovies;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -26,7 +27,8 @@ import io.github.ilya_lebedev.popularmovies.data.MoviesPreferences;
 /**
  * Main activity of the app.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -107,6 +109,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        String sortOrderKey = getString(R.string.pref_sort_order_key);
+        if (sortOrderKey.equals(key)) {
+            // TODO
+        }
     }
 
 }
