@@ -26,62 +26,63 @@ import io.github.ilya_lebedev.popularmovies.R;
  */
 public class MoviesPreferences {
 
-    /* Movies sort order variants */
-    public static final int SORT_ORDER_MOST_POPULAR = 1;
-    public static final int SORT_ORDER_TOP_RATED = 2;
+    /* Movies show mode variants */
+    public static final int SHOW_MODE_MOST_POPULAR = 1;
+    public static final int SHOW_MODE_TOP_RATED = 2;
 
     /* This is utility class and we don't need to instantiate it */
     private MoviesPreferences() {}
 
     /**
-     * Return sort order type.
+     * Return show mode type.
      *
      * @param context Used to access SharedPreferences
-     * @return sort order type.
+     *
+     * @return Show mode type
      */
-    public static int getMoviesSortOrder(Context context) { // getMoviesShowMode
+    public static int getMoviesShowMode(Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String keyForSortOrder = context.getString(R.string.pref_sort_order_key);
-        String mostPopularSortOrder = context.getString(R.string.pref_sort_order_most_popular);
-        String topRatedSortOrder = context.getString(R.string.pref_sort_order_top_rated);
+        String keyForShowMode = context.getString(R.string.pref_show_mode_key);
+        String mostPopularShowMode = context.getString(R.string.pref_show_mode_most_popular);
+        String topRatedShowMode = context.getString(R.string.pref_show_mode_top_rated);
 
-        String sortOrder = sp.getString(keyForSortOrder, mostPopularSortOrder);
+        String showMode = sp.getString(keyForShowMode, mostPopularShowMode);
 
-        if (sortOrder.equals(topRatedSortOrder)) {
-            return SORT_ORDER_TOP_RATED;
+        if (showMode.equals(topRatedShowMode)) {
+            return SHOW_MODE_TOP_RATED;
         } else {
-            return SORT_ORDER_MOST_POPULAR;
+            return SHOW_MODE_MOST_POPULAR;
         }
     }
 
     /**
-     * Save movies sort order.
+     * Save movies show mode.
      *
      * @param context Used to access SharedPreferences
-     * @param sortOrder Sort order type
+     * @param showMode Show mode type
      */
-    public static void setMoviesSortOrder(Context context, int sortOrder) {
+    public static void setMoviesShowMode(Context context, int showMode) {
 
-        int sortOrderStringId;
-        switch (sortOrder) {
-            case SORT_ORDER_MOST_POPULAR:
-                sortOrderStringId = R.string.pref_sort_order_label_most_popular;
+        int showModeStringId;
+        switch (showMode) {
+            case SHOW_MODE_MOST_POPULAR:
+                showModeStringId = R.string.pref_show_mode_label_most_popular;
                 break;
-            case SORT_ORDER_TOP_RATED:
-                sortOrderStringId = R.string.pref_sort_order_label_top_rated;
+            case SHOW_MODE_TOP_RATED:
+                showModeStringId = R.string.pref_show_mode_label_top_rated;
                 break;
             default:
-                throw new IllegalArgumentException("Unknown sort order: " + sortOrder);
+                throw new IllegalArgumentException("Unknown show mode: " + showMode);
         }
 
-        String keyForSortOrder = context.getString(R.string.pref_sort_order_key);
-        String sortOrderValue = context.getString(sortOrderStringId);
+        String keyForShowMode = context.getString(R.string.pref_show_mode_key);
+        String showModeValue = context.getString(showModeStringId);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sp.edit();
 
-        editor.putString(keyForSortOrder, sortOrderValue);
+        editor.putString(keyForShowMode, showModeValue);
 
         editor.apply();
     }

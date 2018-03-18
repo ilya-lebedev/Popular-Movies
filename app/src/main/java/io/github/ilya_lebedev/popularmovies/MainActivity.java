@@ -64,14 +64,14 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
 
-        int sortOrder = MoviesPreferences.getMoviesSortOrder(this);
+        int showMode = MoviesPreferences.getMoviesShowMode(this);
         int menuItemId;
 
-        switch (sortOrder) {
-            case MoviesPreferences.SORT_ORDER_TOP_RATED:
+        switch (showMode) {
+            case MoviesPreferences.SHOW_MODE_TOP_RATED:
                 menuItemId = R.id.action_top_rated;
                 break;
-            case MoviesPreferences.SORT_ORDER_MOST_POPULAR:
+            case MoviesPreferences.SHOW_MODE_MOST_POPULAR:
                 menuItemId = R.id.action_most_popular;
                 break;
             default:
@@ -97,13 +97,13 @@ public class MainActivity extends AppCompatActivity
 
         switch (itemId) {
             case R.id.action_top_rated:
-                MoviesPreferences.setMoviesSortOrder(this,
-                        MoviesPreferences.SORT_ORDER_TOP_RATED);
+                MoviesPreferences.setMoviesShowMode(this,
+                        MoviesPreferences.SHOW_MODE_TOP_RATED);
                 checkUncheckMenuItem(item);
                 return true;
             case R.id.action_most_popular:
-                MoviesPreferences.setMoviesSortOrder(this,
-                        MoviesPreferences.SORT_ORDER_MOST_POPULAR);
+                MoviesPreferences.setMoviesShowMode(this,
+                        MoviesPreferences.SHOW_MODE_MOST_POPULAR);
                 checkUncheckMenuItem(item);
                 return true;
         }
@@ -113,8 +113,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        String sortOrderKey = getString(R.string.pref_sort_order_key);
-        if (sortOrderKey.equals(key)) {
+        String showModeKey = getString(R.string.pref_show_mode_key);
+        if (showModeKey.equals(key)) {
             // TODO
         }
     }
