@@ -32,6 +32,10 @@ public class MoviesContract {
     /* Paths to form valid URI's. */
     public static final String PATH_MOVIE = "movie";
 
+    /* Paths to form valid URI's. */
+    public static final String PATH_TOP_RATED_MOVIE = "top_rated_movie";
+    public static final String PATH_MOST_POPULAR_MOVIE = "most_popular_movie";
+
     /* This inner class defines the table content of the movie table */
     public static final class MovieEntry implements BaseColumns {
 
@@ -39,9 +43,22 @@ public class MoviesContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_MOVIE)
                 .build();
+				
+        public static final Uri CONTENT_URI_TOP_RATED = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_TOP_RATED_MOVIE)
+                .build();
+        public static final Uri CONTENT_URI_MOST_POPULAR = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_MOST_POPULAR_MOVIE)
+                .build();
 
-        /* Name of movie table */
+        /* Name of movie table for cache */
         public static final String TABLE_NAME = "movie";
+		
+		/* Name of movie table for top rated movies */
+		public static final String TABLE_NAME_TOP_RATED = "top_rated_movie";
+		
+		/* Name of movie table for most popular movies */
+		public static final String TABLE_NAME_MOST_POPULAR = "most_popular_movie";
 
         /* Movie ID as returned by TMDb API, used to identify concrete movie */
         public static final String COLUMN_MOVIE_ID = "movie_id";
@@ -63,6 +80,9 @@ public class MoviesContract {
 
         /* Release date is stored as long representing movie release date (in milliseconds) */
         public static final String COLUMN_RELEASE_DATE = "release_date";
+		
+		/* Time of last update (in milliseconds) */
+		public static final String COLUMN_LAST_UPDATE_TIME = "last_update_time";
 
     }
 
