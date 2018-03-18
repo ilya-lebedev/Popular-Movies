@@ -66,13 +66,13 @@ public class NetworkUtils {
      * @return URL to query TMDb service
      */
     public static URL getMoviesListUrl(Context context) {
-        int sortOrder = MoviesPreferences.getMoviesSortOrder(context);
+        int sortOrder = MoviesPreferences.getMoviesShowMode(context);
         String sortOrderPath;
         switch (sortOrder) {
-            case MoviesPreferences.SORT_ORDER_MOST_POPULAR:
+            case MoviesPreferences.SHOW_MODE_MOST_POPULAR:
                 sortOrderPath = MOST_POPULAR_PATH;
                 break;
-            case MoviesPreferences.SORT_ORDER_TOP_RATED:
+            case MoviesPreferences.SHOW_MODE_TOP_RATED:
                 sortOrderPath = TOP_RATED_PATH;
                 break;
             default:
