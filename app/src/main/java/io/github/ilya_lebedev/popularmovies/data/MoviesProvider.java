@@ -37,6 +37,7 @@ public class MoviesProvider extends ContentProvider {
 
     public static final int CODE_TOP_RATED_MOVIE = 200;
     public static final int CODE_MOST_POPULAR_MOVIE = 300;
+    public static final int CODE_FAVORITE_MOVIE = 400;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MoviesDbHelper mOpenHelper;
@@ -55,6 +56,7 @@ public class MoviesProvider extends ContentProvider {
 
         matcher.addURI(authority, MoviesContract.PATH_TOP_RATED_MOVIE, CODE_TOP_RATED_MOVIE);
         matcher.addURI(authority, MoviesContract.PATH_MOST_POPULAR_MOVIE, CODE_MOST_POPULAR_MOVIE);
+        matcher.addURI(authority, MoviesContract.PATH_FAVORITE_MOVIE, CODE_FAVORITE_MOVIE);
 
         return matcher;
     }
@@ -112,6 +114,10 @@ public class MoviesProvider extends ContentProvider {
 
             case  CODE_MOST_POPULAR_MOVIE:
                 tableName = MoviesContract.MovieEntry.TABLE_NAME_MOST_POPULAR;
+                break;
+
+            case CODE_FAVORITE_MOVIE:
+                tableName = MoviesContract.MovieEntry.TABLE_NAME_FAVORITE;
                 break;
 
             default:
@@ -198,6 +204,18 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
+            case CODE_FAVORITE_MOVIE: {
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.MovieEntry.TABLE_NAME_FAVORITE,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -246,6 +264,13 @@ public class MoviesProvider extends ContentProvider {
             case CODE_MOST_POPULAR_MOVIE:
                 rowsDeleted = mOpenHelper.getWritableDatabase().delete(
                         MoviesContract.MovieEntry.TABLE_NAME_MOST_POPULAR,
+                        selection,
+                        selectionArgs);
+                break;
+
+            case CODE_FAVORITE_MOVIE:
+                rowsDeleted = mOpenHelper.getWritableDatabase().delete(
+                        MoviesContract.MovieEntry.TABLE_NAME_FAVORITE,
                         selection,
                         selectionArgs);
                 break;
