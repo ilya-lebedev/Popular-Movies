@@ -42,6 +42,8 @@ public class TmdbJsonUtils {
     private static final String TMDB_OVERVIEW = "overview";
     private static final String TMDB_RELEASE_DATE = "release_date";
 
+    private static final String TMDB_TOTAL_PAGES = "total_pages";
+
     /**/
     private static final String TMDB_STATUS_MESSAGE = "status_message";
     private static final String TMDB_STATUS_CODE = "status_code";
@@ -116,6 +118,13 @@ public class TmdbJsonUtils {
         }
 
         return movieContentValues;
+    }
+
+    public static int getTotalPagesFromJson(String movieJsonString) throws JSONException {
+
+        JSONObject moviesJson = new JSONObject(movieJsonString);
+
+        return moviesJson.getInt(TMDB_TOTAL_PAGES);
     }
 
 }
