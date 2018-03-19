@@ -50,6 +50,9 @@ public class NetworkUtils {
     /* Sort order path by top rated */
     private static final String TOP_RATED_PATH = "top_rated";
 
+    /* Page parameter */
+    private static final String PAGE_PARAM = "page";
+
     /* The API key parameter allow to access TMDb service */
     private static final String API_KEY_PARAM = "api_key";
 
@@ -65,20 +68,20 @@ public class NetworkUtils {
      * @param context used to access other utility methods
      * @return URL to query TMDb service
      */
-    public static URL getMoviesListUrl(Context context) {
-        int sortOrder = MoviesPreferences.getMoviesShowMode(context);
-        String sortOrderPath;
-        switch (sortOrder) {
+    public static URL getMoviesListUrl(Context context, int page) {
+        int showMode = MoviesPreferences.getMoviesShowMode(context);
+        String showModePath;
+        switch (showMode) {
             case MoviesPreferences.SHOW_MODE_MOST_POPULAR:
-                sortOrderPath = MOST_POPULAR_PATH;
+                showModePath = MOST_POPULAR_PATH;
                 break;
             case MoviesPreferences.SHOW_MODE_TOP_RATED:
-                sortOrderPath = TOP_RATED_PATH;
+                showModePath = TOP_RATED_PATH;
                 break;
             default:
-                throw new IllegalArgumentException("Unknown sort order: " + sortOrder);
+                throw new IllegalArgumentException("Unknown show mode: " + showMode);
         }
-        return buildMoviesListUrl(sortOrderPath);
+        return buildMoviesListUrl(showModePath, page);
     }
 
     /**
@@ -88,12 +91,13 @@ public class NetworkUtils {
      *                     we want to get movies list
      * @return The Url to use to query TMDb service
      */
-    private static URL buildMoviesListUrl(String sortOrderPath) {
+    private static URL buildMoviesListUrl(String sortOrderPath, int page) {
 
         Uri moviesListQueryUri = Uri.parse(MOVIE_DB_BASE_URL).buildUpon()
                 .appendPath(MOVIE_PATH)
                 .appendPath(sortOrderPath)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                .appendQueryParameter(PAGE_PARAM, String.valueOf(page))
                 .build();
 
         try {
