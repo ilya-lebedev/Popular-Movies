@@ -67,10 +67,10 @@ public class MoviesPreferences {
         int showModeStringId;
         switch (showMode) {
             case SHOW_MODE_MOST_POPULAR:
-                showModeStringId = R.string.pref_show_mode_label_most_popular;
+                showModeStringId = R.string.pref_show_mode_most_popular;
                 break;
             case SHOW_MODE_TOP_RATED:
-                showModeStringId = R.string.pref_show_mode_label_top_rated;
+                showModeStringId = R.string.pref_show_mode_top_rated;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown show mode: " + showMode);
