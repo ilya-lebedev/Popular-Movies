@@ -22,13 +22,21 @@
 
         <!-- ContentProvider -->
         <provider
-            android:authorities="io.github.ilya_lebedev.popularmovies"
             android:name=".data.MoviesProvider"
+            android:authorities="io.github.ilya_lebedev.popularmovies"
             android:exported="false" />
 
         <service
             android:name=".sync.MovieFetchIntentService"
             android:exported="false" />
+
+        <activity
+            android:name=".MovieDetailActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
 
     </application>
 
