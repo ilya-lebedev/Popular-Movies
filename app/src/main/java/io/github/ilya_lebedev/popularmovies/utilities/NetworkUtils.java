@@ -59,6 +59,22 @@ public class NetworkUtils {
     /* The API key value */
     private static final String API_KEY = BuildConfig.TMDB_API_KEY;
 
+    private static final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/";
+
+    private static final String MOVIE_POSTER_SIZE_W92 = "w92";
+
+    private static final String MOVIE_POSTER_SIZE_W154 = "w154";
+
+    private static final String MOVIE_POSTER_SIZE_W185 = "w185";
+
+    private static final String MOVIE_POSTER_SIZE_W342 = "w342";
+
+    private static final String MOVIE_POSTER_SIZE_W500 = "w500";
+
+    private static final String MOVIE_POSTER_SIZE_W780 = "w780";
+
+    private static final String MOVIE_POSTER_SIZE_ORIGINAL = "original";
+
     /* This is utility class and we don't need to instantiate it */
     private NetworkUtils() {}
 
@@ -82,6 +98,16 @@ public class NetworkUtils {
                 throw new IllegalArgumentException("Unknown show mode: " + showMode);
         }
         return buildMoviesListUrl(showModePath, page);
+    }
+
+    public static String getMoviePosterUrl(Context context, String posterPath) {
+
+        Uri moviePosterUri = Uri.parse(MOVIE_POSTER_BASE_URL).buildUpon()
+                .appendPath(MOVIE_POSTER_SIZE_W185)
+                .appendEncodedPath(posterPath)
+                .build();
+
+        return moviePosterUri.toString();
     }
 
     /**
