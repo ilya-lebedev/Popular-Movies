@@ -23,7 +23,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import io.github.ilya_lebedev.popularmovies.utilities.NetworkUtils;
 
 /**
  * {@link MoviesAdapter} exposes a list of movies
@@ -56,7 +59,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
      */
     @Override
     public MoviesAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_movie, parent, false);
+        View view = LayoutInflater.from(mContext)
+                .inflate(R.layout.list_item_movie, parent, false);
         view.setFocusable(true);
         return new MoviesAdapterViewHolder(view);
     }
@@ -64,12 +68,17 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     /**
      * This method is called by the RecyclerView to display the data at the specific position.
      *
-     * @param holder View holder representing the content of the movie item
+     * @param moviesAdapterViewHolder View holder representing the content of the movie item
      * @param position The position of the movie item within the adapter data set
      */
     @Override
-    public void onBindViewHolder(MoviesAdapterViewHolder holder, int position) {
+    public void onBindViewHolder(MoviesAdapterViewHolder moviesAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);
+
+        String moviePosterPath = mCursor.getString(MainActivity.INDEX_MOVIE_POSTER_PATH);
+        String moviePosterUrl = NetworkUtils.getMoviePosterUrl(mContext, moviePosterPath);
+
+        Picasso.with(mContext).load(moviePosterUrl).into(moviesAdapterViewHolder.posterView);
     }
 
     /**
@@ -96,13 +105,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     class MoviesAdapterViewHolder extends RecyclerView.ViewHolder {
 
         final ImageView posterView;
-        final TextView titleView;
 
         public MoviesAdapterViewHolder(View itemView) {
             super(itemView);
 
             posterView = itemView.findViewById(R.id.im_movie_poster);
-            titleView = itemView.findViewById(R.id.tv_movie_title);
         }
 
     }
