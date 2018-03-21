@@ -16,19 +16,30 @@
 package io.github.ilya_lebedev.popularmovies;
 
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Parcelable;
+import android.preference.PreferenceManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import io.github.ilya_lebedev.popularmovies.data.MoviesContract;
 import io.github.ilya_lebedev.popularmovies.data.MoviesPreferences;
+import io.github.ilya_lebedev.popularmovies.sync.MovieFetchUtils;
 
 /**
  * Main activity of the app.
  */
 public class MainActivity extends AppCompatActivity
-        implements SharedPreferences.OnSharedPreferenceChangeListener {
+        implements SharedPreferences.OnSharedPreferenceChangeListener,
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -54,10 +65,54 @@ public class MainActivity extends AppCompatActivity
     public static final int INDEX_MOVIE_TITLE = 2;
     public static final int INDEX_MOVIE_POSTER_PATH = 3;
 
+    private static final int ID_MOVIE_LOADER = 15;
+
+    private RecyclerView mRecyclerView;
+    private int mPosition = RecyclerView.NO_POSITION;
+    private Parcelable mRecyclerViewState;
+
+    private static final int SCROLL_DIRECTION_DOWN = 1;
+
+    private MoviesAdapter mMoviesAdapter;
+
+    private boolean mIsLoading;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mRecyclerView = findViewById(R.id.rv_movies);
+
+        mMoviesAdapter = new MoviesAdapter(this);
+
+        final GridLayoutManager layoutManager =
+                new GridLayoutManager(this, 2);
+
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        mRecyclerView.setAdapter(mMoviesAdapter);
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (!mRecyclerView.canScrollVertically(SCROLL_DIRECTION_DOWN)
+                        && !mIsLoading) {
+                    mIsLoading = true;
+                    MovieFetchUtils.fetchNextPage(getApplicationContext());
+                    mRecyclerViewState = mRecyclerView.getLayoutManager().onSaveInstanceState();
+                }
+            }
+        });
+
+        /* Setup the shared preference listener */
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.registerOnSharedPreferenceChangeListener(this);
+
+        getSupportLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
+
+        MovieFetchUtils.initialize(this);
     }
 
     @Override
@@ -115,8 +170,75 @@ public class MainActivity extends AppCompatActivity
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         String showModeKey = getString(R.string.pref_show_mode_key);
         if (showModeKey.equals(key)) {
-            // TODO
+            getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER, null, this);
+            MovieFetchUtils.reinitialize(this);
+            mPosition = RecyclerView.NO_POSITION;
         }
+    }
+
+    /**
+     * Called by the {@link android.support.v4.app.LoaderManagerImpl} when a new Loader created.
+     *
+     * @param loaderId The loader ID
+     * @param bundle   Arguments
+     *
+     * @return A new Loader instance
+     */
+    @Override
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+
+        switch (loaderId) {
+
+            case ID_MOVIE_LOADER: {
+                Uri uri;
+                String sortOrder;
+
+                int showMode = MoviesPreferences.getMoviesShowMode(this);
+
+                if (showMode == MoviesPreferences.SHOW_MODE_MOST_POPULAR) {
+                    uri = MoviesContract.MovieEntry.CONTENT_URI_MOST_POPULAR;
+                    sortOrder = MoviesContract.MovieEntry.COLUMN_POPULARITY + " DESC";
+                } else {
+                    uri = MoviesContract.MovieEntry.CONTENT_URI_TOP_RATED;
+                    sortOrder = MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE + " DESC";
+                }
+
+                return new CursorLoader(this,
+                        uri,
+                        MAIN_MOVIE_PROJECTION,
+                        null,
+                        null,
+                        sortOrder);
+            }
+
+            default:
+                throw new RuntimeException("Loader not implemented: " + loaderId);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mIsLoading = false;
+        if (cursor == null) {
+            return;
+        }
+
+        mMoviesAdapter.swapCursor(cursor);
+
+        if (mPosition == RecyclerView.NO_POSITION) {
+            mPosition = 0;
+            mRecyclerView.scrollToPosition(mPosition);
+        }
+
+        if (mRecyclerViewState != null) {
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mRecyclerViewState);
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mMoviesAdapter.swapCursor(null);
     }
 
 }
