@@ -40,13 +40,23 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     /* Movies list data source */
     private Cursor mCursor;
 
+    final private MoviesAdapterOnClickHandler mClickHandler;
+
+    /**
+     * The interface that receives onClick messages.
+     */
+    public interface MoviesAdapterOnClickHandler {
+        void onClick(int movieTmdbId);
+    }
+
     /**
      * Creates MoviesAdapter.
      *
      * @param context Used for the app resources and the UI
      */
-    public MoviesAdapter(@NonNull Context context) {
+    public MoviesAdapter(@NonNull Context context, MoviesAdapterOnClickHandler clickHandler) {
         mContext = context;
+        mClickHandler = clickHandler;
     }
 
     /**
@@ -102,7 +112,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
         notifyDataSetChanged();
     }
 
-    class MoviesAdapterViewHolder extends RecyclerView.ViewHolder {
+    class MoviesAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         final ImageView posterView;
 
@@ -110,8 +120,17 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
             super(itemView);
 
             posterView = itemView.findViewById(R.id.im_movie_poster);
+
+            itemView.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            int movieTmdbId = mCursor.getInt(MainActivity.INDEX_MOVIE_THMBD_ID);
+            mClickHandler.onClick(movieTmdbId);
+        }
     }
 
 }
