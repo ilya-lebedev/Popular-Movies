@@ -15,6 +15,7 @@
  */
 package io.github.ilya_lebedev.popularmovies;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -39,7 +40,8 @@ import io.github.ilya_lebedev.popularmovies.sync.MovieFetchUtils;
  */
 public class MainActivity extends AppCompatActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,
+        MoviesAdapter.MoviesAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity
 
         mRecyclerView = findViewById(R.id.rv_movies);
 
-        mMoviesAdapter = new MoviesAdapter(this);
+        mMoviesAdapter = new MoviesAdapter(this, this);
 
         final GridLayoutManager layoutManager =
                 new GridLayoutManager(this, 2);
@@ -239,6 +241,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mMoviesAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onClick(int movieTmdbId) {
+        Intent movieDetailIntent = new Intent(this, MovieDetailActivity.class);
+        Uri movieUri = MoviesContract.MovieEntry.buildMovieUriWithTmdbId(this, movieTmdbId);
+        movieDetailIntent.setData(movieUri);
+        startActivity(movieDetailIntent);
     }
 
 }
