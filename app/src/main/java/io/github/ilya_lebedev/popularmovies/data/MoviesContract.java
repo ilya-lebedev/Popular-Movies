@@ -15,6 +15,7 @@
  */
 package io.github.ilya_lebedev.popularmovies.data;
 
+import android.content.Context;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -90,6 +91,26 @@ public class MoviesContract {
 
         /* Time of last update (in milliseconds). Used only in favorite movie table */
         public static final String COLUMN_LAST_UPDATE_TIME = "last_update_time";
+
+        public static Uri buildMovieUriWithTmdbId(Context context, int id) {
+
+            Uri contentUri;
+            int showMode = MoviesPreferences.getMoviesShowMode(context);
+            switch (showMode) {
+                case MoviesPreferences.SHOW_MODE_MOST_POPULAR:
+                    contentUri = CONTENT_URI_MOST_POPULAR;
+                    break;
+                case MoviesPreferences.SHOW_MODE_TOP_RATED:
+                    contentUri = CONTENT_URI_TOP_RATED;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown show mode: " + showMode);
+            }
+
+            return contentUri.buildUpon()
+                    .appendPath(Integer.toString(id))
+                    .build();
+        }
 
     }
 
