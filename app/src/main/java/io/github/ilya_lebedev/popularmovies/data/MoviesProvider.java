@@ -36,7 +36,9 @@ public class MoviesProvider extends ContentProvider {
     public static final int CODE_MOVIE = 100;
 
     public static final int CODE_TOP_RATED_MOVIE = 200;
+    public static final int CODE_TOP_RATED_MOVIE_WITH_TMDB_ID = 201;
     public static final int CODE_MOST_POPULAR_MOVIE = 300;
+    public static final int CODE_MOST_POPULAR_MOVIE_WITH_TMDB_ID = 301;
     public static final int CODE_FAVORITE_MOVIE = 400;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -55,7 +57,11 @@ public class MoviesProvider extends ContentProvider {
         matcher.addURI(authority, MoviesContract.PATH_MOVIE, CODE_MOVIE);
 
         matcher.addURI(authority, MoviesContract.PATH_TOP_RATED_MOVIE, CODE_TOP_RATED_MOVIE);
+        matcher.addURI(authority, MoviesContract.PATH_TOP_RATED_MOVIE + "/#",
+                CODE_TOP_RATED_MOVIE_WITH_TMDB_ID);
         matcher.addURI(authority, MoviesContract.PATH_MOST_POPULAR_MOVIE, CODE_MOST_POPULAR_MOVIE);
+        matcher.addURI(authority, MoviesContract.PATH_MOST_POPULAR_MOVIE + "/#",
+                CODE_MOST_POPULAR_MOVIE_WITH_TMDB_ID);
         matcher.addURI(authority, MoviesContract.PATH_FAVORITE_MOVIE, CODE_FAVORITE_MOVIE);
 
         return matcher;
@@ -192,9 +198,39 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
+            case CODE_TOP_RATED_MOVIE_WITH_TMDB_ID: {
+                String id = uri.getLastPathSegment();
+                selection = MoviesContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
+                selectionArgs = new String[] {id};
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.MovieEntry.TABLE_NAME_TOP_RATED,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             case CODE_MOST_POPULAR_MOVIE: {
                 cursor = mOpenHelper.getReadableDatabase().query(
                         MoviesContract.MovieEntry.TABLE_NAME_MOST_POPULAR,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case CODE_MOST_POPULAR_MOVIE_WITH_TMDB_ID: {
+                String id = uri.getLastPathSegment();
+                selection = MoviesContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
+                selectionArgs = new String[] {id};
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.MovieEntry.TABLE_NAME_TOP_RATED,
                         projection,
                         selection,
                         selectionArgs,
