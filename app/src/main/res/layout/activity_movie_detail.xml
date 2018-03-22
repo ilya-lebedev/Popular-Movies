@@ -14,12 +14,125 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="io.github.ilya_lebedev.popularmovies.MovieDetailActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_movie_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/white"
+            android:paddingBottom="32dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="32dp"
+            android:textSize="32sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Matrix" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/gl_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.60" />
+
+        <ImageView
+            android:id="@+id/iv_movie_poster"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintDimensionRatio="2:3"
+            app:layout_constraintEnd_toStartOf="@+id/gl_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_movie_title" />
+
+        <TextView
+            android:id="@+id/tv_movie_release_date_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/label_movie_release_date"
+            app:layout_constraintStart_toStartOf="@+id/gl_vertical"
+            app:layout_constraintTop_toTopOf="@+id/iv_movie_poster" />
+
+        <TextView
+            android:id="@+id/tv_movie_release_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="4dp"
+            android:singleLine="true"
+            android:textSize="22sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tv_movie_release_date_label"
+            app:layout_constraintTop_toBottomOf="@+id/tv_movie_release_date_label"
+            tools:text="2000" />
+
+        <TextView
+            android:id="@+id/tv_movie_rating_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/label_movie_user_rating"
+            app:layout_constraintStart_toStartOf="@+id/tv_movie_release_date"
+            app:layout_constraintTop_toBottomOf="@+id/tv_movie_release_date" />
+
+        <TextView
+            android:id="@+id/tv_movie_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_movie_release_date"
+            app:layout_constraintTop_toBottomOf="@+id/tv_movie_rating_label"
+            tools:text="9.5/10" />
+
+        <TextView
+            android:id="@+id/tv_movie_popularity_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/label_movie_popularity"
+            app:layout_constraintStart_toStartOf="@+id/tv_movie_rating"
+            app:layout_constraintTop_toBottomOf="@+id/tv_movie_rating" />
+
+        <TextView
+            android:id="@+id/tv_movie_popularity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_movie_popularity_label"
+            app:layout_constraintTop_toBottomOf="@+id/tv_movie_popularity_label"
+            tools:text="999.99" />
+
+        <TextView
+            android:id="@+id/tv_movie_overview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/iv_movie_poster"
+            app:layout_constraintTop_toBottomOf="@+id/iv_movie_poster"
+            tools:text="Matrix. Neo. Trinity." />
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>
