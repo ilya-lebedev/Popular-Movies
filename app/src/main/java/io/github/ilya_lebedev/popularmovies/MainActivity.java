@@ -220,7 +220,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        mIsLoading = false;
         if (cursor == null) {
             return;
         }
@@ -232,9 +231,11 @@ public class MainActivity extends AppCompatActivity
             mRecyclerView.scrollToPosition(mPosition);
         }
 
-        if (mRecyclerViewState != null) {
+        if (mIsLoading && mRecyclerViewState != null) {
             mRecyclerView.getLayoutManager().onRestoreInstanceState(mRecyclerViewState);
         }
+
+        mIsLoading = false;
 
     }
 
