@@ -13,8 +13,21 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Popular Movies</string>
+
+
+    <!-- - - - - - - - - - - - - - - -
+      - Used by MovieDetailActivity  -
+      - - - - - - - - - - - - - - - -->
+
+    <!-- Title -->
+    <string name="title_activity_movie_detail">Movie Details</string>
+
+    <string name="format_rating">
+        <xliff:g id="rating" example="5.6">%1$.1f</xliff:g>
+    </string>
+
 
     <!-- - - - - - - - - - - - - - - -
       - Used by menus  -
