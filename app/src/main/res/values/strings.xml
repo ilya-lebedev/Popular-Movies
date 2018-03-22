@@ -24,8 +24,19 @@
     <!-- Title -->
     <string name="title_activity_movie_detail">Movie Details</string>
 
+    <!-- Labels -->
+    <string name="label_movie_release_date">Release date</string>
+    <string name="label_movie_user_rating">User rating</string>
+    <string name="label_movie_popularity">Popularity</string>
+
+    <!-- Formatted strings -->
     <string name="format_rating">
         <xliff:g id="rating" example="5.6">%1$.1f</xliff:g>
+        /10
+    </string>
+
+    <string name="format_popularity">
+        <xliff:g id="popularity" example="78.96">%1$.2f</xliff:g>
     </string>
 
 
