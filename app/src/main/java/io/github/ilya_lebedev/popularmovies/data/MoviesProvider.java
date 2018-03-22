@@ -30,6 +30,8 @@ import android.support.annotation.Nullable;
  */
 public class MoviesProvider extends ContentProvider {
 
+    private static final String TAG = MoviesProvider.class.getSimpleName();
+
     /*
      * These constants are used to match URIs with the data they are looking for.
      */
@@ -200,7 +202,7 @@ public class MoviesProvider extends ContentProvider {
             }
             case CODE_TOP_RATED_MOVIE_WITH_TMDB_ID: {
                 String id = uri.getLastPathSegment();
-                selection = MoviesContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
+                selection = MoviesContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
                 selectionArgs = new String[] {id};
                 cursor = mOpenHelper.getReadableDatabase().query(
                         MoviesContract.MovieEntry.TABLE_NAME_TOP_RATED,
@@ -227,10 +229,10 @@ public class MoviesProvider extends ContentProvider {
             }
             case CODE_MOST_POPULAR_MOVIE_WITH_TMDB_ID: {
                 String id = uri.getLastPathSegment();
-                selection = MoviesContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
+                selection = MoviesContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
                 selectionArgs = new String[] {id};
                 cursor = mOpenHelper.getReadableDatabase().query(
-                        MoviesContract.MovieEntry.TABLE_NAME_TOP_RATED,
+                        MoviesContract.MovieEntry.TABLE_NAME_MOST_POPULAR,
                         projection,
                         selection,
                         selectionArgs,
