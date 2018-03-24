@@ -52,7 +52,7 @@
       - - - - - - - - - - - - - - - -->
 
     <!-- Key name for movies show mode preference in SharedPreferences -->
-    <string name="pref_show_mode_key" translatable="false">sort_order</string>
+    <string name="pref_show_mode_key" translatable="false">show_mode</string>
 
     <!-- Value in SharedPreferences for most popular movies show mode option -->
     <string name="pref_show_mode_most_popular" translatable="false">most_popular</string>
