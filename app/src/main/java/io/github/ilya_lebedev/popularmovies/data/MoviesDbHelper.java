@@ -44,28 +44,6 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        final String SQL_CREATE_MOVIE_TABLE =
-
-                "CREATE TABLE " + MoviesContract.MovieEntry.TABLE_NAME + " (" +
-
-                        MoviesContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-
-                        MoviesContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
-
-                        MoviesContract.MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
-
-                        MoviesContract.MovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
-
-                        MoviesContract.MovieEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
-
-                        MoviesContract.MovieEntry.COLUMN_RELEASE_DATE + " INTEGER NOT NULL, " +
-
-                        MoviesContract.MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
-
-                        MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
-
-                        " UNIQUE (" + MoviesContract.MovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
-
 
         final String SQL_BASE_PART =
 
@@ -110,8 +88,6 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                         MoviesContract.MovieEntry.COLUMN_LAST_UPDATE_TIME + " INTEGER NOT NULL" +
 
                         ");";
-
-        sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
 
         sqLiteDatabase.execSQL(SQL_CREATE_TOP_RATED_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_MOST_POPULAR_MOVIE_TABLE);

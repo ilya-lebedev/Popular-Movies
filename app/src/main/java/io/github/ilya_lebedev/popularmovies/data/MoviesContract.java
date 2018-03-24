@@ -31,20 +31,12 @@ public class MoviesContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     /* Paths to form valid URI's. */
-    public static final String PATH_MOVIE = "movie";
-
-    /* Paths to form valid URI's. */
     public static final String PATH_TOP_RATED_MOVIE = "top_rated_movie";
     public static final String PATH_MOST_POPULAR_MOVIE = "most_popular_movie";
     public static final String PATH_FAVORITE_MOVIE = "favorite_movie";
 
     /* This inner class defines the table content of the movie table */
     public static final class MovieEntry implements BaseColumns {
-
-        /* The base CONTENT_URI used to query the movie table from the content provider */
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(PATH_MOVIE)
-                .build();
 
         public static final Uri CONTENT_URI_TOP_RATED = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_TOP_RATED_MOVIE)
@@ -55,9 +47,6 @@ public class MoviesContract {
         public static final Uri CONTENT_URI_FAVORITE = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_FAVORITE_MOVIE)
                 .build();
-
-        /* Name of movie table for cache */
-        public static final String TABLE_NAME = "movie";
 
         /* Name of movie table for top rated movies */
         public static final String TABLE_NAME_TOP_RATED = "top_rated_movie";

@@ -35,13 +35,12 @@ public class MoviesProvider extends ContentProvider {
     /*
      * These constants are used to match URIs with the data they are looking for.
      */
-    public static final int CODE_MOVIE = 100;
 
-    public static final int CODE_TOP_RATED_MOVIE = 200;
-    public static final int CODE_TOP_RATED_MOVIE_WITH_TMDB_ID = 201;
-    public static final int CODE_MOST_POPULAR_MOVIE = 300;
-    public static final int CODE_MOST_POPULAR_MOVIE_WITH_TMDB_ID = 301;
-    public static final int CODE_FAVORITE_MOVIE = 400;
+    public static final int CODE_TOP_RATED_MOVIE = 100;
+    public static final int CODE_TOP_RATED_MOVIE_WITH_TMDB_ID = 101;
+    public static final int CODE_MOST_POPULAR_MOVIE = 200;
+    public static final int CODE_MOST_POPULAR_MOVIE_WITH_TMDB_ID = 201;
+    public static final int CODE_FAVORITE_MOVIE = 300;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MoviesDbHelper mOpenHelper;
@@ -55,8 +54,6 @@ public class MoviesProvider extends ContentProvider {
 
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MoviesContract.CONTENT_AUTHORITY;
-
-        matcher.addURI(authority, MoviesContract.PATH_MOVIE, CODE_MOVIE);
 
         matcher.addURI(authority, MoviesContract.PATH_TOP_RATED_MOVIE, CODE_TOP_RATED_MOVIE);
         matcher.addURI(authority, MoviesContract.PATH_TOP_RATED_MOVIE + "/#",
@@ -95,26 +92,6 @@ public class MoviesProvider extends ContentProvider {
         String tableName;
 
         switch (sUriMatcher.match(uri)) {
-            case CODE_MOVIE:
-                db.beginTransaction();
-                int rowInserted = 0;
-                try {
-                    for (ContentValues value : values) {
-                        long _id = db.insert(MoviesContract.MovieEntry.TABLE_NAME, null, value);
-                        if (_id != -1) {
-                            rowInserted++;
-                        }
-                    }
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
-                }
-
-                if (rowInserted > 0) {
-                    getContext().getContentResolver().notifyChange(uri, null);
-                }
-
-                return rowInserted;
 
             case CODE_TOP_RATED_MOVIE:
                 tableName = MoviesContract.MovieEntry.TABLE_NAME_TOP_RATED;
@@ -176,18 +153,7 @@ public class MoviesProvider extends ContentProvider {
         Cursor cursor;
 
         switch (sUriMatcher.match(uri)) {
-            case CODE_MOVIE: {
-                cursor = mOpenHelper.getReadableDatabase().query(
-                        MoviesContract.MovieEntry.TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder
-                );
-                break;
-            }
+
             case CODE_TOP_RATED_MOVIE: {
                 cursor = mOpenHelper.getReadableDatabase().query(
                         MoviesContract.MovieEntry.TABLE_NAME_TOP_RATED,
@@ -200,6 +166,7 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
+
             case CODE_TOP_RATED_MOVIE_WITH_TMDB_ID: {
                 String id = uri.getLastPathSegment();
                 selection = MoviesContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
@@ -215,6 +182,7 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
+
             case CODE_MOST_POPULAR_MOVIE: {
                 cursor = mOpenHelper.getReadableDatabase().query(
                         MoviesContract.MovieEntry.TABLE_NAME_MOST_POPULAR,
@@ -227,6 +195,7 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
+
             case CODE_MOST_POPULAR_MOVIE_WITH_TMDB_ID: {
                 String id = uri.getLastPathSegment();
                 selection = MoviesContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
@@ -242,6 +211,7 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
+
             case CODE_FAVORITE_MOVIE: {
                 cursor = mOpenHelper.getReadableDatabase().query(
                         MoviesContract.MovieEntry.TABLE_NAME_FAVORITE,
@@ -284,13 +254,6 @@ public class MoviesProvider extends ContentProvider {
         if (selection == null) selection = "1";
 
         switch (sUriMatcher.match(uri)) {
-
-            case CODE_MOVIE:
-                rowsDeleted = mOpenHelper.getWritableDatabase().delete(
-                        MoviesContract.MovieEntry.TABLE_NAME,
-                        selection,
-                        selectionArgs);
-                break;
 
             case CODE_TOP_RATED_MOVIE:
                 rowsDeleted = mOpenHelper.getWritableDatabase().delete(
