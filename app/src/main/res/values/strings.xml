@@ -60,6 +60,9 @@
     <!-- Value in SharedPreferences for top rated movies show mode option -->
     <string name="pref_show_mode_top_rated" translatable="false">top_rated</string>
 
+    <!-- Value in SharedPreferences for favorite moveis show mode option -->
+    <string name="pref_show_mode_favorite" translatable="false">favorite</string>
+
     <!-- Label for most popular option in show mode preference -->
     <string name="pref_show_mode_label_most_popular">Most Popular</string>
 

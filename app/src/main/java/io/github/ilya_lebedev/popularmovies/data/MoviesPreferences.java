@@ -29,6 +29,7 @@ public class MoviesPreferences {
     /* Movies show mode variants */
     public static final int SHOW_MODE_MOST_POPULAR = 1;
     public static final int SHOW_MODE_TOP_RATED = 2;
+    public static final int SHOW_MODE_FAVORITE = 3;
 
     /* This is utility class and we don't need to instantiate it */
     private MoviesPreferences() {}
@@ -46,13 +47,18 @@ public class MoviesPreferences {
         String keyForShowMode = context.getString(R.string.pref_show_mode_key);
         String mostPopularShowMode = context.getString(R.string.pref_show_mode_most_popular);
         String topRatedShowMode = context.getString(R.string.pref_show_mode_top_rated);
+        String favoriteShowMode = context.getString(R.string.pref_show_mode_favorite);
 
         String showMode = sp.getString(keyForShowMode, mostPopularShowMode);
 
         if (showMode.equals(topRatedShowMode)) {
             return SHOW_MODE_TOP_RATED;
-        } else {
+        } else if (showMode.equals(mostPopularShowMode)){
             return SHOW_MODE_MOST_POPULAR;
+        } else if (showMode.equals(favoriteShowMode)) {
+            return SHOW_MODE_FAVORITE;
+        } else {
+            throw new IllegalArgumentException("Unknown show mode: " + showMode);
         }
     }
 
@@ -71,6 +77,9 @@ public class MoviesPreferences {
                 break;
             case SHOW_MODE_TOP_RATED:
                 showModeStringId = R.string.pref_show_mode_top_rated;
+                break;
+            case SHOW_MODE_FAVORITE:
+                showModeStringId = R.string.pref_show_mode_favorite;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown show mode: " + showMode);
