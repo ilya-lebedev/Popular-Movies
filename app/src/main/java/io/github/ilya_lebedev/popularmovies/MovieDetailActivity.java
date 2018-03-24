@@ -22,6 +22,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -67,6 +68,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
     private TextView mReleaseDateTv;
     private TextView mRatingTv;
     private TextView mPopularityTv;
+    private TextView mFavoriteFab;
     private TextView mOverviewTv;
 
     private Uri mUri;
@@ -81,12 +83,20 @@ public class MovieDetailActivity extends AppCompatActivity implements
         mReleaseDateTv = findViewById(R.id.tv_movie_release_date);
         mRatingTv = findViewById(R.id.tv_movie_rating);
         mPopularityTv = findViewById(R.id.tv_movie_popularity);
+        mFavoriteFab = findViewById(R.id.fab_movie_in_favorite);
         mOverviewTv = findViewById(R.id.tv_movie_overview);
 
         mUri = getIntent().getData();
         if (mUri == null) {
             throw new NullPointerException("URI for MovieDetailActivity cannot be null");
         }
+
+        mFavoriteFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO
+            }
+        });
 
         getSupportLoaderManager().initLoader(ID_DETAIL_MOVIE_LOADER, null, this);
     }
