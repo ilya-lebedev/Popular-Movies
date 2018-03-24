@@ -46,6 +46,7 @@
 
     <string name="action_top_rated">Top rated</string>
     <string name="action_most_popular">Most popular</string>
+    <string name="action_favorite">Favorite</string>
 
     <!-- - - - - - - - - - - - - - - -
       - Used by MoviesPreferences  -

@@ -131,6 +131,9 @@ public class MainActivity extends AppCompatActivity
             case MoviesPreferences.SHOW_MODE_MOST_POPULAR:
                 menuItemId = R.id.action_most_popular;
                 break;
+            case MoviesPreferences.SHOW_MODE_FAVORITE:
+                menuItemId = R.id.action_favorite;
+                break;
             default:
                 menuItemId = R.id.action_top_rated;
         }
@@ -148,20 +151,24 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void changeShowMode(MenuItem item, int showMode) {
+        MoviesPreferences.setMoviesShowMode(this, showMode);
+        checkUncheckMenuItem(item);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
         switch (itemId) {
             case R.id.action_top_rated:
-                MoviesPreferences.setMoviesShowMode(this,
-                        MoviesPreferences.SHOW_MODE_TOP_RATED);
-                checkUncheckMenuItem(item);
+                changeShowMode(item, MoviesPreferences.SHOW_MODE_TOP_RATED);
                 return true;
             case R.id.action_most_popular:
-                MoviesPreferences.setMoviesShowMode(this,
-                        MoviesPreferences.SHOW_MODE_MOST_POPULAR);
-                checkUncheckMenuItem(item);
+                changeShowMode(item, MoviesPreferences.SHOW_MODE_MOST_POPULAR);
+                return true;
+            case R.id.action_favorite:
+                changeShowMode(item, MoviesPreferences.SHOW_MODE_FAVORITE);
                 return true;
         }
 
