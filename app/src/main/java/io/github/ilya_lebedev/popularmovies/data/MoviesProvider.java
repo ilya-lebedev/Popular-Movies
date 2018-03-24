@@ -16,9 +16,11 @@
 package io.github.ilya_lebedev.popularmovies.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -35,12 +37,12 @@ public class MoviesProvider extends ContentProvider {
     /*
      * These constants are used to match URIs with the data they are looking for.
      */
-
     public static final int CODE_TOP_RATED_MOVIE = 100;
     public static final int CODE_TOP_RATED_MOVIE_WITH_TMDB_ID = 101;
     public static final int CODE_MOST_POPULAR_MOVIE = 200;
     public static final int CODE_MOST_POPULAR_MOVIE_WITH_TMDB_ID = 201;
     public static final int CODE_FAVORITE_MOVIE = 300;
+    public static final int CODE_FAVORITE_MOVIE_WITH_TMDB_ID = 301;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MoviesDbHelper mOpenHelper;
@@ -58,10 +60,14 @@ public class MoviesProvider extends ContentProvider {
         matcher.addURI(authority, MoviesContract.PATH_TOP_RATED_MOVIE, CODE_TOP_RATED_MOVIE);
         matcher.addURI(authority, MoviesContract.PATH_TOP_RATED_MOVIE + "/#",
                 CODE_TOP_RATED_MOVIE_WITH_TMDB_ID);
+
         matcher.addURI(authority, MoviesContract.PATH_MOST_POPULAR_MOVIE, CODE_MOST_POPULAR_MOVIE);
         matcher.addURI(authority, MoviesContract.PATH_MOST_POPULAR_MOVIE + "/#",
                 CODE_MOST_POPULAR_MOVIE_WITH_TMDB_ID);
+
         matcher.addURI(authority, MoviesContract.PATH_FAVORITE_MOVIE, CODE_FAVORITE_MOVIE);
+        matcher.addURI(authority, MoviesContract.PATH_FAVORITE_MOVIE + "/#",
+                CODE_FAVORITE_MOVIE_WITH_TMDB_ID);
 
         return matcher;
     }
@@ -225,6 +231,22 @@ public class MoviesProvider extends ContentProvider {
                 break;
             }
 
+            case CODE_FAVORITE_MOVIE_WITH_TMDB_ID: {
+                String id = uri.getLastPathSegment();
+                selection = MoviesContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
+                selectionArgs = new String[] {id};
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.MovieEntry.TABLE_NAME_FAVORITE,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -276,6 +298,16 @@ public class MoviesProvider extends ContentProvider {
                         selectionArgs);
                 break;
 
+            case CODE_FAVORITE_MOVIE_WITH_TMDB_ID:
+                String id = uri.getLastPathSegment();
+                selection = MoviesContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
+                selectionArgs = new String[] {id};
+                rowsDeleted = mOpenHelper.getWritableDatabase().delete(
+                        MoviesContract.MovieEntry.TABLE_NAME_FAVORITE,
+                        selection,
+                        selectionArgs);
+                break;
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -296,7 +328,35 @@ public class MoviesProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        return null;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+        Uri resultUri;
+        switch (sUriMatcher.match(uri)) {
+
+            case CODE_FAVORITE_MOVIE_WITH_TMDB_ID: {
+                long resultId = db.insert(
+                        MoviesContract.MovieEntry.TABLE_NAME_FAVORITE,
+                        null,
+                        values);
+
+                if (resultId > 0) {
+                    resultUri = ContentUris.withAppendedId(
+                            MoviesContract.MovieEntry.CONTENT_URI_FAVORITE,
+                            resultId);
+                } else {
+                    throw new SQLException("Failed to insert row into: " + uri);
+                }
+
+                break;
+            }
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return resultUri;
     }
 
     @Override
