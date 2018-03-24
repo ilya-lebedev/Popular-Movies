@@ -92,6 +92,9 @@ public class MoviesContract {
                 case MoviesPreferences.SHOW_MODE_TOP_RATED:
                     contentUri = CONTENT_URI_TOP_RATED;
                     break;
+                case MoviesPreferences.SHOW_MODE_FAVORITE:
+                    contentUri = CONTENT_URI_FAVORITE;
+                    break;
                 default:
                     throw new IllegalArgumentException("Unknown show mode: " + showMode);
             }
