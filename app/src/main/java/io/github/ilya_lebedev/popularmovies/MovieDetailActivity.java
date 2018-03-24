@@ -62,7 +62,9 @@ public class MovieDetailActivity extends AppCompatActivity implements
     public static final int INDEX_MOVIE_POPULARITY = 5;
     public static final int INDEX_MOVIE_OVERVIEW = 6;
 
+    /* Loaders ids */
     private static final int ID_DETAIL_MOVIE_LOADER = 17;
+    private static final int ID_IS_MOVIE_FAVORITE_LOADER = 27;
 
     private TextView mTitleTv;
     private ImageView mPosterIv;
@@ -100,6 +102,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
         });
 
         getSupportLoaderManager().initLoader(ID_DETAIL_MOVIE_LOADER, null, this);
+        getSupportLoaderManager().initLoader(ID_IS_MOVIE_FAVORITE_LOADER, null, this);
     }
 
     @Override
@@ -117,6 +120,21 @@ public class MovieDetailActivity extends AppCompatActivity implements
                         null);
             }
 
+            case ID_IS_MOVIE_FAVORITE_LOADER: {
+                String id = mUri.getLastPathSegment();
+                Uri favoriteUri = Uri.withAppendedPath(
+                        MoviesContract.MovieEntry.CONTENT_URI_FAVORITE, id);
+
+                return new CursorLoader(
+                        this,
+                        favoriteUri,
+                        null,
+                        null,
+                        null,
+                        null
+                );
+            }
+
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
         }
@@ -126,33 +144,53 @@ public class MovieDetailActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        boolean cursorHasValidData = false;
-        if (data != null && data.moveToFirst()) {
-            cursorHasValidData = true;
+        int loaderId = loader.getId();
+
+        switch (loaderId) {
+
+            case ID_DETAIL_MOVIE_LOADER: {
+
+                boolean cursorHasValidData = false;
+                if (data != null && data.moveToFirst()) {
+                    cursorHasValidData = true;
+                }
+
+                if (!cursorHasValidData) {
+                    return;
+                }
+
+                String movieTitle = data.getString(INDEX_MOVIE_TITLE);
+                String moviePosterPath = data.getString(INDEX_MOVIE_POSTER_PATH);
+                String moviePosterUrl = NetworkUtils.getMoviePosterUrl(this, moviePosterPath);
+                long movieReleaseDateMillis = data.getLong(INDEX_MOVIE_RELEASE_DATE);
+                String movieReleaseDate = TmdbDateUtils
+                        .getFriendlyReleaseDateString(this, movieReleaseDateMillis);
+                double movieVoteAverage = data.getDouble(INDEX_MOVIE_VOTE_AVERAGE);
+                String movieRating = getString(R.string.format_rating, movieVoteAverage);
+                double moviePopularity = data.getDouble(INDEX_MOVIE_POPULARITY);
+                String moviePopularityString = getString(R.string.format_popularity, moviePopularity);
+                String movieOverview = data.getString(INDEX_MOVIE_OVERVIEW);
+
+                mTitleTv.setText(movieTitle);
+                Picasso.with(this).load(moviePosterUrl).into(mPosterIv);
+                mReleaseDateTv.setText(movieReleaseDate);
+                mRatingTv.setText(movieRating);
+                mPopularityTv.setText(moviePopularityString);
+                mOverviewTv.setText(movieOverview);
+
+                break;
+            }
+
+            case ID_IS_MOVIE_FAVORITE_LOADER: {
+                if (data != null && data.moveToFirst()) {
+                    mFavoriteFab.setImageResource(android.R.drawable.btn_star_big_on);
+                } else {
+                    mFavoriteFab.setImageResource(android.R.drawable.btn_star_big_off);
+                }
+
+                break;
+            }
         }
-
-        if (!cursorHasValidData) {
-            return;
-        }
-
-        String movieTitle = data.getString(INDEX_MOVIE_TITLE);
-        String moviePosterPath = data.getString(INDEX_MOVIE_POSTER_PATH);
-        String moviePosterUrl = NetworkUtils.getMoviePosterUrl(this, moviePosterPath);
-        long movieReleaseDateMillis = data.getLong(INDEX_MOVIE_RELEASE_DATE);
-        String movieReleaseDate = TmdbDateUtils
-                .getFriendlyReleaseDateString(this, movieReleaseDateMillis);
-        double movieVoteAverage = data.getDouble(INDEX_MOVIE_VOTE_AVERAGE);
-        String movieRating = getString(R.string.format_rating, movieVoteAverage);
-        double moviePopularity = data.getDouble(INDEX_MOVIE_POPULARITY);
-        String moviePopularityString = getString(R.string.format_popularity, moviePopularity);
-        String movieOverview = data.getString(INDEX_MOVIE_OVERVIEW);
-
-        mTitleTv.setText(movieTitle);
-        Picasso.with(this).load(moviePosterUrl).into(mPosterIv);
-        mReleaseDateTv.setText(movieReleaseDate);
-        mRatingTv.setText(movieRating);
-        mPopularityTv.setText(moviePopularityString);
-        mOverviewTv.setText(movieOverview);
     }
 
     @Override
