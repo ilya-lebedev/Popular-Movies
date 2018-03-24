@@ -17,6 +17,7 @@ package io.github.ilya_lebedev.popularmovies;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -68,7 +69,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
     private TextView mReleaseDateTv;
     private TextView mRatingTv;
     private TextView mPopularityTv;
-    private TextView mFavoriteFab;
+    private FloatingActionButton mFavoriteFab;
     private TextView mOverviewTv;
 
     private Uri mUri;
