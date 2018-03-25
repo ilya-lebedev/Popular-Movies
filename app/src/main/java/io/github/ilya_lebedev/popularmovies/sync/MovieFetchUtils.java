@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import io.github.ilya_lebedev.popularmovies.data.MoviesPreferences;
 import io.github.ilya_lebedev.popularmovies.utilities.PageUtils;
 
 /**
@@ -42,6 +43,11 @@ public class MovieFetchUtils {
     }
 
     private static void startInitialization(Context context) {
+
+        if (MoviesPreferences.isMoviesShowModeFavorite(context)) {
+            return;
+        }
+
         int currentPage = PageUtils.getCurrentPage(context);
 
         if (currentPage == 0) {
