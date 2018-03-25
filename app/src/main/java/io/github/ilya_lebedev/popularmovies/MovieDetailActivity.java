@@ -15,6 +15,10 @@
  */
 package io.github.ilya_lebedev.popularmovies;
 
+import android.content.AsyncQueryHandler;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
@@ -66,6 +70,18 @@ public class MovieDetailActivity extends AppCompatActivity implements
     private static final int ID_DETAIL_MOVIE_LOADER = 17;
     private static final int ID_IS_MOVIE_FAVORITE_LOADER = 27;
 
+    /* Tokens for AsyncQueryHandler */
+    private static final int TOKEN_MOVIE_INSERT = 1;
+    private static final int TOKEN_MOVIE_DELETE = 2;
+
+    int mMovieTmdbId;
+    String mMovieTitle;
+    String mMoviePosterPath;
+    long mMovieReleaseDateMillis;
+    double mMovieVoteAverage;
+    double mMoviePopularity;
+    String mMovieOverview;
+
     private TextView mTitleTv;
     private ImageView mPosterIv;
     private TextView mReleaseDateTv;
@@ -73,6 +89,8 @@ public class MovieDetailActivity extends AppCompatActivity implements
     private TextView mPopularityTv;
     private FloatingActionButton mFavoriteFab;
     private TextView mOverviewTv;
+
+    private boolean mIsMovieFavorite;
 
     private Uri mUri;
 
@@ -94,10 +112,15 @@ public class MovieDetailActivity extends AppCompatActivity implements
             throw new NullPointerException("URI for MovieDetailActivity cannot be null");
         }
 
+        mFavoriteFab.setEnabled(false);
         mFavoriteFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
+                if (mIsMovieFavorite) {
+                    deleteMovieFromFavorite();
+                } else {
+                    saveMovieToFavorite();
+                }
             }
         });
 
@@ -159,33 +182,37 @@ public class MovieDetailActivity extends AppCompatActivity implements
                     return;
                 }
 
-                String movieTitle = data.getString(INDEX_MOVIE_TITLE);
-                String moviePosterPath = data.getString(INDEX_MOVIE_POSTER_PATH);
-                String moviePosterUrl = NetworkUtils.getMoviePosterUrl(this, moviePosterPath);
-                long movieReleaseDateMillis = data.getLong(INDEX_MOVIE_RELEASE_DATE);
+                mMovieTmdbId = data.getInt(INDEX_MOVIE_TMDB_ID);
+                mMovieTitle = data.getString(INDEX_MOVIE_TITLE);
+                mMoviePosterPath = data.getString(INDEX_MOVIE_POSTER_PATH);
+                String moviePosterUrl = NetworkUtils.getMoviePosterUrl(this, mMoviePosterPath);
+                mMovieReleaseDateMillis = data.getLong(INDEX_MOVIE_RELEASE_DATE);
                 String movieReleaseDate = TmdbDateUtils
-                        .getFriendlyReleaseDateString(this, movieReleaseDateMillis);
-                double movieVoteAverage = data.getDouble(INDEX_MOVIE_VOTE_AVERAGE);
-                String movieRating = getString(R.string.format_rating, movieVoteAverage);
-                double moviePopularity = data.getDouble(INDEX_MOVIE_POPULARITY);
-                String moviePopularityString = getString(R.string.format_popularity, moviePopularity);
-                String movieOverview = data.getString(INDEX_MOVIE_OVERVIEW);
+                        .getFriendlyReleaseDateString(this, mMovieReleaseDateMillis);
+                mMovieVoteAverage = data.getDouble(INDEX_MOVIE_VOTE_AVERAGE);
+                String movieRating = getString(R.string.format_rating, mMovieVoteAverage);
+                mMoviePopularity = data.getDouble(INDEX_MOVIE_POPULARITY);
+                String moviePopularityString = getString(R.string.format_popularity, mMoviePopularity);
+                mMovieOverview = data.getString(INDEX_MOVIE_OVERVIEW);
 
-                mTitleTv.setText(movieTitle);
+                mTitleTv.setText(mMovieTitle);
                 Picasso.with(this).load(moviePosterUrl).into(mPosterIv);
                 mReleaseDateTv.setText(movieReleaseDate);
                 mRatingTv.setText(movieRating);
                 mPopularityTv.setText(moviePopularityString);
-                mOverviewTv.setText(movieOverview);
+                mOverviewTv.setText(mMovieOverview);
 
                 break;
             }
 
             case ID_IS_MOVIE_FAVORITE_LOADER: {
+                mFavoriteFab.setEnabled(true);
                 if (data != null && data.moveToFirst()) {
                     mFavoriteFab.setImageResource(android.R.drawable.btn_star_big_on);
+                    mIsMovieFavorite = true;
                 } else {
                     mFavoriteFab.setImageResource(android.R.drawable.btn_star_big_off);
+                    mIsMovieFavorite = false;
                 }
 
                 break;
@@ -195,6 +222,50 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+    }
+
+    private void saveMovieToFavorite() {
+        MovieAsyncHandler movieAsyncHandler = new MovieAsyncHandler(getContentResolver());
+
+        ContentValues values = new ContentValues();
+        values.put(MoviesContract.MovieEntry.COLUMN_MOVIE_ID, mMovieTmdbId);
+        values.put(MoviesContract.MovieEntry.COLUMN_TITLE, mMovieTitle);
+        values.put(MoviesContract.MovieEntry.COLUMN_POSTER_PATH, mMoviePosterPath);
+        values.put(MoviesContract.MovieEntry.COLUMN_RELEASE_DATE, mMovieReleaseDateMillis);
+        values.put(MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE, mMovieVoteAverage);
+        values.put(MoviesContract.MovieEntry.COLUMN_POPULARITY, mMoviePopularity);
+        values.put(MoviesContract.MovieEntry.COLUMN_OVERVIEW, mMovieOverview);
+        values.put(MoviesContract.MovieEntry.COLUMN_LAST_UPDATE_TIME, System.currentTimeMillis()); // TODO
+
+        Uri uri = ContentUris.withAppendedId(
+                MoviesContract.MovieEntry.CONTENT_URI_FAVORITE, mMovieTmdbId);
+
+        movieAsyncHandler.startInsert(TOKEN_MOVIE_INSERT, null, uri, values);
+    }
+
+    private void deleteMovieFromFavorite() {
+        MovieAsyncHandler movieAsyncHandler = new MovieAsyncHandler(getContentResolver());
+
+        Uri uri = ContentUris.withAppendedId(
+                MoviesContract.MovieEntry.CONTENT_URI_FAVORITE, mMovieTmdbId);
+
+        String selection = MoviesContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
+        String[] selectionArgs = new String[] { Integer.toString(mMovieTmdbId) };
+
+        movieAsyncHandler.startDelete(
+                TOKEN_MOVIE_DELETE,
+                null,
+                uri,
+                selection,
+                selectionArgs);
+    }
+
+    private static class MovieAsyncHandler extends AsyncQueryHandler {
+
+        public MovieAsyncHandler(ContentResolver cr) {
+            super(cr);
+        }
+
     }
 
 }
