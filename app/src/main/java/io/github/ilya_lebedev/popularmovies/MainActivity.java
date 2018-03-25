@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (!mRecyclerView.canScrollVertically(SCROLL_DIRECTION_DOWN)
+                        && !MoviesPreferences.isMoviesShowModeFavorite(MainActivity.this)
                         && !mIsLoading) {
                     mIsLoading = true;
                     MovieFetchUtils.fetchNextPage(getApplicationContext());
@@ -207,9 +208,12 @@ public class MainActivity extends AppCompatActivity
                 if (showMode == MoviesPreferences.SHOW_MODE_MOST_POPULAR) {
                     uri = MoviesContract.MovieEntry.CONTENT_URI_MOST_POPULAR;
                     sortOrder = MoviesContract.MovieEntry.COLUMN_POPULARITY + " DESC";
-                } else {
+                } else if (showMode == MoviesPreferences.SHOW_MODE_TOP_RATED) {
                     uri = MoviesContract.MovieEntry.CONTENT_URI_TOP_RATED;
                     sortOrder = MoviesContract.MovieEntry.COLUMN_VOTE_AVERAGE + " DESC";
+                } else {
+                    uri = MoviesContract.MovieEntry.CONTENT_URI_FAVORITE;
+                    sortOrder = null;
                 }
 
                 return new CursorLoader(this,
