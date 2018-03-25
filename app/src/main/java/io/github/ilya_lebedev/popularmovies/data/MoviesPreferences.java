@@ -96,6 +96,12 @@ public class MoviesPreferences {
         editor.apply();
     }
 
+    public static boolean isMoviesShowModeFavorite(Context context) {
+        int showMode = getMoviesShowMode(context);
+
+        return showMode == SHOW_MODE_FAVORITE;
+    }
+
     /**
      * Return total pages number of most popular movies.
      *
