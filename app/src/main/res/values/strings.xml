@@ -31,8 +31,7 @@
 
     <!-- Formatted strings -->
     <string name="format_rating">
-        <xliff:g id="rating" example="5.6">%1$.1f</xliff:g>
-        /10
+        <xliff:g id="rating" example="5.6">%1$.1f</xliff:g>/10
     </string>
 
     <string name="format_popularity">
