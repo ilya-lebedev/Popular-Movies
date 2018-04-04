@@ -34,10 +34,14 @@ public class MoviesContract {
     public static final String PATH_TOP_RATED_MOVIE = "top_rated_movie";
     public static final String PATH_MOST_POPULAR_MOVIE = "most_popular_movie";
     public static final String PATH_FAVORITE_MOVIE = "favorite_movie";
+    public static final String PATH_MOVIE_TMDB_ID = "movie_tmdb_id";
+    public static final String PATH_MOVIE_VIDEOS = "movie_videos";
+    public static final String PATH_MOVIE_REVIEWS = "movie_reviews";
 
     /* This inner class defines the table content of the movie table */
     public static final class MovieEntry implements BaseColumns {
 
+        /* Content uris for appropriate tables */
         public static final Uri CONTENT_URI_TOP_RATED = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_TOP_RATED_MOVIE)
                 .build();
@@ -101,6 +105,79 @@ public class MoviesContract {
 
             return contentUri.buildUpon()
                     .appendPath(Integer.toString(id))
+                    .build();
+        }
+
+    }
+
+    /* Defines the table content of the movie video table */
+    public static final class VideoEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI_VIDEOS = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_MOVIE_VIDEOS)
+                .build();
+
+        public static final Uri CONTENT_URI_MOVIE_VIDEOS = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_MOVIE_VIDEOS)
+                .appendPath(PATH_MOVIE_TMDB_ID)
+                .build();
+
+        public static final String TABLE_NAME = "movie_video";
+
+        public static final String COLUMN_MOVIE_TMDB_ID = "movie_tmdb_id";
+
+        public static final String COLUMN_TMDB_ID = "tmdb_id";
+
+        public static final String COLUMN_KEY = "key";
+
+        public static final String COLUMN_NAME = "name";
+
+        public static final String COLUMN_SITE = "site";
+
+        public static final String COLUMN_TYPE = "type";
+
+        public static Uri buildMovieVideosUriWithMovieTmdbId(int movieTmdbId) {
+
+            return CONTENT_URI_MOVIE_VIDEOS.buildUpon()
+                    .appendPath(Integer.toString(movieTmdbId))
+                    .build();
+        }
+
+    }
+
+    /* Defines the table content of the movie review table */
+    public static final class ReviewEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI_REVIEWS = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_MOVIE_REVIEWS)
+                .build();
+
+        public static final Uri CONTENT_URI_MOVIE_REVIEWS = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_MOVIE_REVIEWS)
+                .appendPath(PATH_MOVIE_TMDB_ID)
+                .build();
+
+        public static final String TABLE_NAME = "movie_review";
+
+        public static final String COLUMN_MOVIE_TMDB_ID = "movie_tmdb_id";
+
+        public static final String COLUMN_TMDB_ID = "tmdb_id";
+
+        public static final String COLUMN_AUTHOR = "author";
+
+        public static final String COLUMN_CONTENT = "content";
+
+        public static Uri buildMovieReviewUriWithId(int reviewId) {
+
+            return CONTENT_URI_REVIEWS.buildUpon()
+                    .appendPath(Integer.toString(reviewId))
+                    .build();
+        }
+
+        public static Uri buildMovieReviewsUriWithMovieTmdbId(int moveiTmdbId) {
+
+            return CONTENT_URI_MOVIE_REVIEWS.buildUpon()
+                    .appendPath(Integer.toString(moveiTmdbId))
                     .build();
         }
 
