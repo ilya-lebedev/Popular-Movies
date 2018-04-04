@@ -50,6 +50,12 @@ public class NetworkUtils {
     /* Sort order path by top rated */
     private static final String TOP_RATED_PATH = "top_rated";
 
+    /**/
+    private static final String VIDEOS_PATH = "videos";
+
+    /**/
+    private static final String REVIEWS_PATH = "reviews";
+
     /* Page parameter */
     private static final String PAGE_PARAM = "page";
 
@@ -59,6 +65,7 @@ public class NetworkUtils {
     /* The API key value */
     private static final String API_KEY = BuildConfig.TMDB_API_KEY;
 
+    /* Base URL of movie poster */
     private static final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/";
 
     private static final String MOVIE_POSTER_SIZE_W92 = "w92";
@@ -108,6 +115,46 @@ public class NetworkUtils {
                 .build();
 
         return moviePosterUri.toString();
+    }
+
+    public static URL getMovieVideoListUrl(int movieTmdbId) {
+
+        Uri movieVideosListUri = Uri.parse(MOVIE_DB_BASE_URL).buildUpon()
+                .appendPath(MOVIE_PATH)
+                .appendPath(String.valueOf(movieTmdbId))
+                .appendPath(VIDEOS_PATH)
+                .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                .build();
+
+        try {
+            URL moviesListQueryUrl = new URL(movieVideosListUri.toString());
+            Log.v(TAG, "URL: " + moviesListQueryUrl);
+            return moviesListQueryUrl;
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public static URL getMovieReviewListUrl(int movieTmdbId) {
+
+        Uri movieReviewsListUri = Uri.parse(MOVIE_DB_BASE_URL).buildUpon()
+                .appendPath(MOVIE_PATH)
+                .appendPath(String.valueOf(movieTmdbId))
+                .appendPath(REVIEWS_PATH)
+                .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                .build();
+
+        try {
+            URL moviesListQueryUrl = new URL(movieReviewsListUri.toString());
+            Log.v(TAG, "URL: " + moviesListQueryUrl);
+            return moviesListQueryUrl;
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+
     }
 
     /**
