@@ -40,6 +40,15 @@
 
     <string name="toast_no_app_for_youtube">There is no app to open this content.</string>
 
+
+    <!-- - - - - - - - - - - - - - - -
+      - Used by MovieReviewActivity  -
+      - - - - - - - - - - - - - - - -->
+
+    <!-- Title -->
+    <string name="title_activity_movie_review">Movie Review</string>
+
+
     <!-- - - - - - - - - - - - - - - -
       - Used by menus  -
       - - - - - - - - - - - - - - - -->

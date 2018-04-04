@@ -40,11 +40,20 @@
 
         <activity
             android:name=".MovieDetailActivity"
+            android:launchMode="singleTop"
             android:label="@string/title_activity_movie_detail"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
+        </activity>
+
+        <activity android:name=".MovieReviewActivity"
+            android:label="@string/title_activity_movie_review"
+            android:parentActivityName=".MovieDetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MovieDetailActivity" />
         </activity>
 
         <!-- ContentProvider -->

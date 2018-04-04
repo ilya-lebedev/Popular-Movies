@@ -373,6 +373,10 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(int reviewId) {
+        Intent intent = new Intent(this, MovieReviewActivity.class);
+        Uri uri = MoviesContract.ReviewEntry.buildMovieReviewUriWithId(reviewId);
+        intent.setData(uri);
+        startActivity(intent);
     }
 
     private static class MovieAsyncHandler extends AsyncQueryHandler {
