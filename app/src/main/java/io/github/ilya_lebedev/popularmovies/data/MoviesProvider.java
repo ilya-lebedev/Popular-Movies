@@ -43,6 +43,12 @@ public class MoviesProvider extends ContentProvider {
     public static final int CODE_MOST_POPULAR_MOVIE_WITH_TMDB_ID = 201;
     public static final int CODE_FAVORITE_MOVIE = 300;
     public static final int CODE_FAVORITE_MOVIE_WITH_TMDB_ID = 301;
+    public static final int CODE_MOVIE_VIDEO = 400;
+    public static final int CODE_MOVIE_VIDEO_WITH_ID = 401;
+    public static final int CODE_MOVIE_VIDEO_WITH_MOVIE_TMDB_ID = 402;
+    public static final int CODE_MOVIE_REVIEW = 500;
+    public static final int CODE_MOVIE_REVIEW_WITH_ID = 501;
+    public static final int CODE_MOVIE_REVIEW_WITH_MOVIE_TMDB_ID = 502;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MoviesDbHelper mOpenHelper;
@@ -68,6 +74,20 @@ public class MoviesProvider extends ContentProvider {
         matcher.addURI(authority, MoviesContract.PATH_FAVORITE_MOVIE, CODE_FAVORITE_MOVIE);
         matcher.addURI(authority, MoviesContract.PATH_FAVORITE_MOVIE + "/#",
                 CODE_FAVORITE_MOVIE_WITH_TMDB_ID);
+
+        matcher.addURI(authority, MoviesContract.PATH_MOVIE_VIDEOS, CODE_MOVIE_VIDEO);
+        matcher.addURI(authority, MoviesContract.PATH_MOVIE_VIDEOS + "/#",
+                CODE_MOVIE_VIDEO_WITH_ID);
+        matcher.addURI(authority,
+                MoviesContract.PATH_MOVIE_VIDEOS + "/" + MoviesContract.PATH_MOVIE_TMDB_ID + "/#",
+                CODE_MOVIE_VIDEO_WITH_MOVIE_TMDB_ID);
+
+        matcher.addURI(authority, MoviesContract.PATH_MOVIE_REVIEWS, CODE_MOVIE_REVIEW);
+        matcher.addURI(authority, MoviesContract.PATH_MOVIE_REVIEWS + "/#",
+                CODE_MOVIE_REVIEW_WITH_ID);
+        matcher.addURI(authority,
+                MoviesContract.PATH_MOVIE_REVIEWS + "/" + MoviesContract.PATH_MOVIE_TMDB_ID + "/#",
+                CODE_MOVIE_REVIEW_WITH_MOVIE_TMDB_ID);
 
         return matcher;
     }
@@ -109,6 +129,14 @@ public class MoviesProvider extends ContentProvider {
 
             case CODE_FAVORITE_MOVIE:
                 tableName = MoviesContract.MovieEntry.TABLE_NAME_FAVORITE;
+                break;
+
+            case CODE_MOVIE_VIDEO_WITH_MOVIE_TMDB_ID:
+                tableName = MoviesContract.VideoEntry.TABLE_NAME;
+                break;
+
+            case CODE_MOVIE_REVIEW_WITH_MOVIE_TMDB_ID:
+                tableName = MoviesContract.ReviewEntry.TABLE_NAME;
                 break;
 
             default:
@@ -247,6 +275,54 @@ public class MoviesProvider extends ContentProvider {
                 break;
             }
 
+            case CODE_MOVIE_VIDEO_WITH_MOVIE_TMDB_ID: {
+                String movieId = uri.getLastPathSegment();
+                selection = MoviesContract.VideoEntry.COLUMN_MOVIE_TMDB_ID + " = ?";
+                selectionArgs = new String[] { movieId };
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.VideoEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+
+            case CODE_MOVIE_REVIEW_WITH_ID: {
+                String id = uri.getLastPathSegment();
+                selection = MoviesContract.VideoEntry._ID + " = ?";
+                selectionArgs = new String[] { id };
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.ReviewEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+
+            case CODE_MOVIE_REVIEW_WITH_MOVIE_TMDB_ID: {
+                String movieId = uri.getLastPathSegment();
+                selection = MoviesContract.ReviewEntry.COLUMN_MOVIE_TMDB_ID + " = ?";
+                selectionArgs = new String[] { movieId };
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.ReviewEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -307,6 +383,44 @@ public class MoviesProvider extends ContentProvider {
                         selection,
                         selectionArgs);
                 break;
+
+            case CODE_MOVIE_VIDEO: {
+                rowsDeleted = mOpenHelper.getWritableDatabase().delete(
+                        MoviesContract.VideoEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            }
+
+            case CODE_MOVIE_VIDEO_WITH_MOVIE_TMDB_ID: {
+                String movieId = uri.getLastPathSegment();
+                selection = MoviesContract.VideoEntry.COLUMN_MOVIE_TMDB_ID + " = ?";
+                selectionArgs = new String[] { movieId };
+                rowsDeleted = mOpenHelper.getWritableDatabase().delete(
+                        MoviesContract.VideoEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            }
+
+            case CODE_MOVIE_REVIEW: {
+                rowsDeleted = mOpenHelper.getWritableDatabase().delete(
+                        MoviesContract.ReviewEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            }
+
+            case CODE_MOVIE_REVIEW_WITH_MOVIE_TMDB_ID: {
+                String movieId = uri.getLastPathSegment();
+                selection = MoviesContract.ReviewEntry.COLUMN_MOVIE_TMDB_ID + " = ?";
+                selectionArgs = new String[] { movieId };
+                rowsDeleted = mOpenHelper.getWritableDatabase().delete(
+                        MoviesContract.ReviewEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            }
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
