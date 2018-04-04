@@ -19,6 +19,7 @@ import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
@@ -27,13 +28,17 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import io.github.ilya_lebedev.popularmovies.data.MoviesContract;
+import io.github.ilya_lebedev.popularmovies.sync.MovieDetailFetchUtils;
 import io.github.ilya_lebedev.popularmovies.utilities.NetworkUtils;
 import io.github.ilya_lebedev.popularmovies.utilities.TmdbDateUtils;
 
@@ -41,7 +46,9 @@ import io.github.ilya_lebedev.popularmovies.utilities.TmdbDateUtils;
  * MovieDetailActivity
  */
 public class MovieDetailActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,
+        VideoAdapter.VideoAdapterOnClickHandler,
+        ReviewAdapter.ReviewAdapterOnClickHandler {
 
     private static final String TAG = MovieDetailActivity.class.getSimpleName();
 
@@ -66,9 +73,29 @@ public class MovieDetailActivity extends AppCompatActivity implements
     public static final int INDEX_MOVIE_POPULARITY = 5;
     public static final int INDEX_MOVIE_OVERVIEW = 6;
 
+    public static final String[] MOVIE_VIDEO_PROJECTION = {
+            MoviesContract.VideoEntry.COLUMN_KEY,
+            MoviesContract.VideoEntry.COLUMN_NAME
+    };
+
+    public static final int INDEX_MOVIE_VIDEO_KEY = 0;
+    public static final int INDEX_MOVIE_VIDEO_NAME = 1;
+
+    public static final String[] MOVIE_REVIEW_PROJECTION = {
+            MoviesContract.ReviewEntry._ID,
+            MoviesContract.ReviewEntry.COLUMN_AUTHOR,
+            MoviesContract.ReviewEntry.COLUMN_CONTENT
+    };
+
+    public static final int INDEX_MOVIE_REVIEW_ID = 0;
+    public static final int INDEX_MOVIE_REVIEW_AUTHOR = 1;
+    public static final int INDEX_MOVIE_REVIEW_CONTENT = 2;
+
     /* Loaders ids */
     private static final int ID_DETAIL_MOVIE_LOADER = 17;
     private static final int ID_IS_MOVIE_FAVORITE_LOADER = 27;
+    private static final int ID_MOVIE_VIDEOS_LOADER = 37;
+    private static final int ID_MOVIE_REVIEWS_LOADER = 47;
 
     /* Tokens for AsyncQueryHandler */
     private static final int TOKEN_MOVIE_INSERT = 1;
@@ -90,6 +117,12 @@ public class MovieDetailActivity extends AppCompatActivity implements
     private FloatingActionButton mFavoriteFab;
     private TextView mOverviewTv;
 
+    private RecyclerView mVideoRecyclerView;
+    private RecyclerView mReviewRecyclerView;
+
+    private VideoAdapter mVideoAdapter;
+    private ReviewAdapter mReviewAdapter;
+
     private boolean mIsMovieFavorite;
 
     private Uri mUri;
@@ -106,6 +139,23 @@ public class MovieDetailActivity extends AppCompatActivity implements
         mPopularityTv = findViewById(R.id.tv_movie_popularity);
         mFavoriteFab = findViewById(R.id.fab_movie_in_favorite);
         mOverviewTv = findViewById(R.id.tv_movie_overview);
+
+        mVideoRecyclerView = findViewById(R.id.rv_movie_videos);
+        mReviewRecyclerView = findViewById(R.id.rv_movie_reviews);
+
+        mVideoAdapter = new VideoAdapter(this, this);
+        mReviewAdapter = new ReviewAdapter(this, this);
+
+        final LinearLayoutManager videoLayoutManager = new LinearLayoutManager(
+                this, LinearLayoutManager.HORIZONTAL, false);
+        final LinearLayoutManager reviewLayoutManager = new LinearLayoutManager(
+                this, LinearLayoutManager.HORIZONTAL, false);
+
+        mVideoRecyclerView.setLayoutManager(videoLayoutManager);
+        mReviewRecyclerView.setLayoutManager(reviewLayoutManager);
+
+        mVideoRecyclerView.setAdapter(mVideoAdapter);
+        mReviewRecyclerView.setAdapter(mReviewAdapter);
 
         mUri = getIntent().getData();
         if (mUri == null) {
@@ -126,6 +176,8 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
         getSupportLoaderManager().initLoader(ID_DETAIL_MOVIE_LOADER, null, this);
         getSupportLoaderManager().initLoader(ID_IS_MOVIE_FAVORITE_LOADER, null, this);
+        getSupportLoaderManager().initLoader(ID_MOVIE_VIDEOS_LOADER, null, this);
+        getSupportLoaderManager().initLoader(ID_MOVIE_REVIEWS_LOADER, null, this);
     }
 
     @Override
@@ -158,6 +210,32 @@ public class MovieDetailActivity extends AppCompatActivity implements
                 );
             }
 
+            case ID_MOVIE_VIDEOS_LOADER: {
+                String id = mUri.getLastPathSegment();
+                Uri uri = MoviesContract.VideoEntry.buildMovieVideosUriWithMovieTmdbId(Integer.parseInt(id));
+                return new CursorLoader(
+                        this,
+                        uri,
+                        MOVIE_VIDEO_PROJECTION,
+                        null,
+                        null,
+                        null
+                );
+            }
+
+            case ID_MOVIE_REVIEWS_LOADER: {
+                String id = mUri.getLastPathSegment();
+                Uri uri = MoviesContract.ReviewEntry.buildMovieReviewsUriWithMovieTmdbId(Integer.parseInt(id));
+                return new CursorLoader(
+                        this,
+                        uri,
+                        MOVIE_REVIEW_PROJECTION,
+                        null,
+                        null,
+                        null
+                );
+            }
+
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
         }
@@ -165,7 +243,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 
         int loaderId = loader.getId();
 
@@ -174,7 +252,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
             case ID_DETAIL_MOVIE_LOADER: {
 
                 boolean cursorHasValidData = false;
-                if (data != null && data.moveToFirst()) {
+                if (cursor != null && cursor.moveToFirst()) {
                     cursorHasValidData = true;
                 }
 
@@ -182,18 +260,18 @@ public class MovieDetailActivity extends AppCompatActivity implements
                     return;
                 }
 
-                mMovieTmdbId = data.getInt(INDEX_MOVIE_TMDB_ID);
-                mMovieTitle = data.getString(INDEX_MOVIE_TITLE);
-                mMoviePosterPath = data.getString(INDEX_MOVIE_POSTER_PATH);
+                mMovieTmdbId = cursor.getInt(INDEX_MOVIE_TMDB_ID);
+                mMovieTitle = cursor.getString(INDEX_MOVIE_TITLE);
+                mMoviePosterPath = cursor.getString(INDEX_MOVIE_POSTER_PATH);
                 String moviePosterUrl = NetworkUtils.getMoviePosterUrl(this, mMoviePosterPath);
-                mMovieReleaseDateMillis = data.getLong(INDEX_MOVIE_RELEASE_DATE);
+                mMovieReleaseDateMillis = cursor.getLong(INDEX_MOVIE_RELEASE_DATE);
                 String movieReleaseDate = TmdbDateUtils
                         .getFriendlyReleaseDateString(this, mMovieReleaseDateMillis);
-                mMovieVoteAverage = data.getDouble(INDEX_MOVIE_VOTE_AVERAGE);
+                mMovieVoteAverage = cursor.getDouble(INDEX_MOVIE_VOTE_AVERAGE);
                 String movieRating = getString(R.string.format_rating, mMovieVoteAverage);
-                mMoviePopularity = data.getDouble(INDEX_MOVIE_POPULARITY);
+                mMoviePopularity = cursor.getDouble(INDEX_MOVIE_POPULARITY);
                 String moviePopularityString = getString(R.string.format_popularity, mMoviePopularity);
-                mMovieOverview = data.getString(INDEX_MOVIE_OVERVIEW);
+                mMovieOverview = cursor.getString(INDEX_MOVIE_OVERVIEW);
 
                 mTitleTv.setText(mMovieTitle);
                 Picasso.with(this).load(moviePosterUrl).into(mPosterIv);
@@ -202,12 +280,15 @@ public class MovieDetailActivity extends AppCompatActivity implements
                 mPopularityTv.setText(moviePopularityString);
                 mOverviewTv.setText(mMovieOverview);
 
+                MovieDetailFetchUtils.startMovieVideoFetchTask(this, mMovieTmdbId);
+                MovieDetailFetchUtils.startMovieReviewFetchTask(this, mMovieTmdbId);
+
                 break;
             }
 
             case ID_IS_MOVIE_FAVORITE_LOADER: {
                 mFavoriteFab.setEnabled(true);
-                if (data != null && data.moveToFirst()) {
+                if (cursor != null && cursor.moveToFirst()) {
                     mFavoriteFab.setImageResource(android.R.drawable.btn_star_big_on);
                     mIsMovieFavorite = true;
                 } else {
@@ -217,6 +298,20 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
                 break;
             }
+
+            case ID_MOVIE_VIDEOS_LOADER: {
+                mVideoAdapter.swapCursor(cursor);
+                break;
+            }
+
+            case ID_MOVIE_REVIEWS_LOADER: {
+                mReviewAdapter.swapCursor(cursor);
+                break;
+            }
+
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loaderId);
+
         }
     }
 
@@ -258,6 +353,26 @@ public class MovieDetailActivity extends AppCompatActivity implements
                 uri,
                 selection,
                 selectionArgs);
+    }
+
+    @Override
+    public void onClick(String videoKey) {
+        Uri youtubeAppUri = Uri.parse("vnd.youtube:" + videoKey);
+        Intent youtubeAppIntent = new Intent(Intent.ACTION_VIEW, youtubeAppUri);
+        Uri youtubeWebUri = Uri.parse("https://www.youtube.com/watch?v=" + videoKey);
+        Intent youtubeWebIntent = new Intent(Intent.ACTION_VIEW, youtubeWebUri);
+
+        if (youtubeAppIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(youtubeAppIntent);
+        } else if (youtubeWebIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(youtubeWebIntent);
+        } else {
+            Toast.makeText(this, R.string.toast_no_app_for_youtube, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onClick(int reviewId) {
     }
 
     private static class MovieAsyncHandler extends AsyncQueryHandler {
