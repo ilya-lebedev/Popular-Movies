@@ -44,6 +44,22 @@ public class TmdbJsonUtils {
 
     private static final String TMDB_TOTAL_PAGES = "total_pages";
 
+    /* JSON keys of a movie video JSON object */
+    private static final String TMDB_VIDEO_MOVIE_ID = "id";
+    private static final String TMDB_VIDEO_RESULTS = "results";
+    private static final String TMDB_VIDEO_ID = "id";
+    private static final String TMDB_VIDEO_KEY = "key";
+    private static final String TMDB_VIDEO_NAME = "name";
+    private static final String TMDB_VIDEO_SITE = "site";
+    private static final String TMDB_VIDEO_TYPE = "type";
+
+    /* JSON keys of a movie review JSON object */
+    private static final String TMDB_REVIEW_MOVIE_ID = "id";
+    private static final String TMDB_REVIEW_RESULTS = "results";
+    private static final String TMDB_REVIEW_ID = "id";
+    private static final String TMDB_REVIEW_AUTHOR = "author";
+    private static final String TMDB_REVIEW_CONTENT = "content";
+
     /**/
     private static final String TMDB_STATUS_MESSAGE = "status_message";
     private static final String TMDB_STATUS_CODE = "status_code";
@@ -125,6 +141,74 @@ public class TmdbJsonUtils {
         JSONObject moviesJson = new JSONObject(movieJsonString);
 
         return moviesJson.getInt(TMDB_TOTAL_PAGES);
+    }
+
+    public static ContentValues[] getVideoContentValueFromJsonString(String videoJsonString)
+            throws JSONException {
+
+        JSONObject jsonObject = new JSONObject(videoJsonString);
+
+        int movieId = jsonObject.getInt(TMDB_VIDEO_MOVIE_ID);
+
+        /* Get JSON array of movie videos */
+        JSONArray videoResultsArray = jsonObject.getJSONArray(TMDB_VIDEO_RESULTS);
+
+        ContentValues[] videoContentValues = new ContentValues[videoResultsArray.length()];
+
+        for (int i = 0; i < videoResultsArray.length(); i++) {
+            JSONObject video = videoResultsArray.getJSONObject(i);
+
+            String id = video.getString(TMDB_VIDEO_ID);
+            String key = video.getString(TMDB_VIDEO_KEY);
+            String name = video.getString(TMDB_VIDEO_NAME);
+            String site = video.getString(TMDB_VIDEO_SITE);
+            String type = video.getString(TMDB_VIDEO_TYPE);
+
+            /* Put parsed data to the ContentValues */
+            ContentValues videoValues = new ContentValues();
+            videoValues.put(MoviesContract.VideoEntry.COLUMN_MOVIE_TMDB_ID, movieId);
+            videoValues.put(MoviesContract.VideoEntry.COLUMN_TMDB_ID, id);
+            videoValues.put(MoviesContract.VideoEntry.COLUMN_KEY, key);
+            videoValues.put(MoviesContract.VideoEntry.COLUMN_NAME, name);
+            videoValues.put(MoviesContract.VideoEntry.COLUMN_SITE, site);
+            videoValues.put(MoviesContract.VideoEntry.COLUMN_TYPE, type);
+
+            videoContentValues[i] = videoValues;
+        }
+
+        return videoContentValues;
+    }
+
+    public static ContentValues[] getReviewContentValueFromJsonString(String reviewJsonString)
+            throws JSONException {
+
+        JSONObject jsonObject = new JSONObject(reviewJsonString);
+
+        int movieId = jsonObject.getInt(TMDB_REVIEW_MOVIE_ID);
+
+        /* Get JSON array of movie reviews */
+        JSONArray reviewResultsArray = jsonObject.getJSONArray(TMDB_REVIEW_RESULTS);
+
+        ContentValues[] reviewContentsValues = new ContentValues[reviewResultsArray.length()];
+
+        for (int i = 0; i < reviewResultsArray.length(); i++) {
+            JSONObject review = reviewResultsArray.getJSONObject(i);
+
+            String id = review.getString(TMDB_REVIEW_ID);
+            String author = review.getString(TMDB_REVIEW_AUTHOR);
+            String content = review.getString(TMDB_REVIEW_CONTENT);
+
+            /* Put parsed data to the ContentValues */
+            ContentValues reviewValues = new ContentValues();
+            reviewValues.put(MoviesContract.ReviewEntry.COLUMN_MOVIE_TMDB_ID, movieId);
+            reviewValues.put(MoviesContract.ReviewEntry.COLUMN_TMDB_ID, id);
+            reviewValues.put(MoviesContract.ReviewEntry.COLUMN_AUTHOR, author);
+            reviewValues.put(MoviesContract.ReviewEntry.COLUMN_CONTENT, content);
+
+            reviewContentsValues[i] = reviewValues;
+        }
+
+        return reviewContentsValues;
     }
 
 }
