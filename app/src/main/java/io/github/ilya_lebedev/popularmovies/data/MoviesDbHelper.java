@@ -89,9 +89,49 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
                         ");";
 
+
+        final String SQL_CREATE_VIDEO_TABLE =
+
+                "CREATE TABLE " + MoviesContract.VideoEntry.TABLE_NAME + "(" +
+
+                        MoviesContract.VideoEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+
+                        MoviesContract.VideoEntry.COLUMN_MOVIE_TMDB_ID + " INTEGER NOT NULL, " +
+
+                        MoviesContract.VideoEntry.COLUMN_TMDB_ID + " TEXT NOT NULL, " +
+
+                        MoviesContract.VideoEntry.COLUMN_KEY + " TEXT NOT NULL, " +
+
+                        MoviesContract.VideoEntry.COLUMN_NAME + " TEXT NOT NULL, " +
+
+                        MoviesContract.VideoEntry.COLUMN_SITE + " TEXT NOT NULL, " +
+
+                        MoviesContract.VideoEntry.COLUMN_TYPE + " TEXT NOT NULL, " +
+
+                        " UNIQUE (" + MoviesContract.VideoEntry.COLUMN_TMDB_ID + ") ON CONFLICT REPLACE);";
+
+
+        final String SQL_CREATE_REVIEW_TABLE =
+
+                "CREATE TABLE " + MoviesContract.ReviewEntry.TABLE_NAME + "(" +
+
+                        MoviesContract.ReviewEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+
+                        MoviesContract.ReviewEntry.COLUMN_MOVIE_TMDB_ID + " INTEGER NOT NULL, " +
+
+                        MoviesContract.ReviewEntry.COLUMN_TMDB_ID + " TEXT NOT NULL, " +
+
+                        MoviesContract.ReviewEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
+
+                        MoviesContract.ReviewEntry.COLUMN_CONTENT + " TEXT NOT NULL, " +
+
+                        " UNIQUE (" + MoviesContract.ReviewEntry.COLUMN_TMDB_ID + ") ON CONFLICT REPLACE);";
+
         sqLiteDatabase.execSQL(SQL_CREATE_TOP_RATED_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_MOST_POPULAR_MOVIE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_FAVORITE_MOVIE_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_VIDEO_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_REVIEW_TABLE);
     }
 
     /**
