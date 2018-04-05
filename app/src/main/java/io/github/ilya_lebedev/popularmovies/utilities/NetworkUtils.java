@@ -36,6 +36,9 @@ public class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
+    private static final int TIMEOUT_CONNECT = 5000;
+    private static final int TIMEOUT_READ = 10000;
+
     private static final String SCANNER_DELIMITER = "\\A";
 
     /* Base URL of TMDb API. */
@@ -191,19 +194,30 @@ public class NetworkUtils {
      * @throws IOException Related to network and stream reading
      */
     public static String getResponseFromHttpUrl(URL url) throws IOException {
+
+        /* Open connection for a given uri */
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+        /* Set connection and read timeouts */
+        urlConnection.setConnectTimeout(TIMEOUT_CONNECT);
+        urlConnection.setReadTimeout(TIMEOUT_READ);
+
         try {
+            /* Get a stream to read data from it */
             InputStream inputStream = urlConnection.getInputStream();
 
+            /* Put stream inside scanner */
             Scanner scanner = new Scanner(inputStream);
             scanner.useDelimiter(SCANNER_DELIMITER);
 
+            /* Read data */
             boolean hasInput = scanner.hasNext();
             String response = null;
             if (hasInput) {
                 response = scanner.next();
             }
             scanner.close();
+
             return response;
         } finally {
             urlConnection.disconnect();
